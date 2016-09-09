@@ -1,12 +1,12 @@
 #include <hidef.h> /* for EnableInterrupts macro */
 #include "derivative.h" /* include peripheral declarations */
-#include "edukit.h"
-
-
+#include "tanteador.h"
 
 void main(void) {
 
   inicializaCPU();
+  inicializaDisplays();
+  inicializaPulsadores();
   DisableInterrupts;
 
 
