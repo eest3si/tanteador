@@ -1,5 +1,5 @@
 
-PROGRAM "C:\Users\jctor\Google Drive\EEST3SI\AED3\Proyectos\Marcador ping-pong\Tanteador\bin\Project.abs"
+PROGRAM "C:\Users\jctor\Google Drive\EEST3SI\AED3\Proyectos\Tanteador ping-pong\Tanteador\bin\Project.abs"
 
 *********************************************************************************************
 TARGET SECTION
@@ -23,7 +23,7 @@ Entry point: 0x8EC (_Startup)
 _startupData is allocated at 0x8F5 and uses 6 Bytes
 extern struct _tagStartup {
   unsigned nofZeroOut     0
-  _Copy    *toCopyDownBeg 0x913
+  _Copy    *toCopyDownBeg 0xAA3
 } _startupData;
 
 *********************************************************************************************
@@ -32,8 +32,8 @@ Section Name                    Size  Type     From       To       Segment
 ---------------------------------------------------------------------------------------------
 .init                            149     R      0x860      0x8F4   ROM
 .startData                        14     R      0x8F5      0x902   ROM
-.text                             16     R      0x903      0x912   ROM
-.copy                              2     R      0x913      0x914   ROM
+.text                            416     R      0x903      0xAA2   ROM
+.copy                              2     R      0xAA3      0xAA4   ROM
 .abs_section_0                     1   N/I        0x0        0x0   .absSeg0
 .abs_section_1                     1   N/I        0x1        0x1   .absSeg1
 .abs_section_2                     1   N/I        0x2        0x2   .absSeg2
@@ -118,7 +118,7 @@ Section Name                    Size  Type     From       To       Segment
 .vectSeg80_vect                    2     R     0xFFFE     0xFFFF   .vectSeg80
 
 Summary of section sizes per section type:
-READ_ONLY (R):          B7 (dec:      183)
+READ_ONLY (R):         247 (dec:      583)
 READ_WRITE (R/W):       50 (dec:       80)
 NO_INIT (N/I):          5B (dec:       91)
 
@@ -135,19 +135,25 @@ OBJECT-ALLOCATION SECTION
 MODULE:                 -- main.c.o --
 - PROCEDURES:
      inicializaCPU                              903       7       7       1   .text       
-     main                                       90A       9       9       1   .text       
+     inicializaDisplays                         90A      10      16       1   .text       
+     inicializaPulsadores                       91A       F      15       1   .text       
+     demora100us                                929       9       9       1   .text       
+     demora1ms                                  932       C      12       1   .text       
+     demoraEnms                                 93E      17      23       3   .text       
+     main                                       955       F      15       1   .text       
+     ModoConfig                                 964     13F     319      12   .text       
 - VARIABLES:
 MODULE:                 -- MC68HC908AP32.C.o --
 - PROCEDURES:
 - VARIABLES:
-     _PTA                                         0       1       1       0   .abs_section_0
-     _PTB                                         1       1       1       0   .abs_section_1
-     _PTC                                         2       1       1       0   .abs_section_2
-     _PTD                                         3       1       1       0   .abs_section_3
-     _DDRA                                        4       1       1       0   .abs_section_4
-     _DDRB                                        5       1       1       0   .abs_section_5
-     _DDRC                                        6       1       1       0   .abs_section_6
-     _DDRD                                        7       1       1       0   .abs_section_7
+     _PTA                                         0       1       1      18   .abs_section_0
+     _PTB                                         1       1       1       8   .abs_section_1
+     _PTC                                         2       1       1       8   .abs_section_2
+     _PTD                                         3       1       1      28   .abs_section_3
+     _DDRA                                        4       1       1       1   .abs_section_4
+     _DDRB                                        5       1       1       1   .abs_section_5
+     _DDRC                                        6       1       1       1   .abs_section_6
+     _DDRD                                        7       1       1       5   .abs_section_7
      _LEDA                                        C       1       1       0   .abs_section_c
      _SPCR                                       10       1       1       0   .abs_section_10
      _SPSCR                                      11       1       1       0   .abs_section_11
@@ -159,9 +165,9 @@ MODULE:                 -- MC68HC908AP32.C.o --
      _SCS2                                       17       1       1       0   .abs_section_17
      _SCDR                                       18       1       1       0   .abs_section_18
      _SCBR                                       19       1       1       0   .abs_section_19
-     _KBSCR                                      1A       1       1       0   .abs_section_1a
-     _KBIER                                      1B       1       1       0   .abs_section_1b
-     _INTSCR2                                    1C       1       1       0   .abs_section_1c
+     _KBSCR                                      1A       1       1       1   .abs_section_1a
+     _KBIER                                      1B       1       1       1   .abs_section_1b
+     _INTSCR2                                    1C       1       1       1   .abs_section_1c
      _CONFIG2                                    1D       1       1       1   .abs_section_1d
      _INTSCR1                                    1E       1       1       0   .abs_section_1e
      _CONFIG1                                    1F       1       1       1   .abs_section_1f
@@ -208,7 +214,7 @@ MODULE:                 -- MC68HC908AP32.C.o --
      _FLBPR                                    FE09       1       1       0   .abs_section_fe09
      _BRKSCR                                   FE0E       1       1       0   .abs_section_fe0e
      _LVISR                                    FE0F       1       1       0   .abs_section_fe0f
-     _COPCTL                                   FFFF       1       1       1   .abs_section_ffff
+     _COPCTL                                   FFFF       1       1       0   .abs_section_ffff
      _T1CNT                                      21       2       2       0   .abs_section_21
      _T1MOD                                      23       2       2       0   .abs_section_23
      _T1CH0                                      26       2       2       0   .abs_section_26
@@ -234,7 +240,7 @@ MODULE:                 -- Start08.c.o --
 MODULE STATISTIC
   Name                                      Data   Code  Const
 ---------------------------------------------------------------------------------------------
-  main.c.o                                     0     16      0
+  main.c.o                                     0    416      0
   MC68HC908AP32.C.o                           91      0      0
   Start08.c.o                                  0    149      0
   other                                       80     16      2
@@ -243,7 +249,8 @@ MODULE STATISTIC
 SECTION USE IN OBJECT-ALLOCATION SECTION
 ---------------------------------------------------------------------------------------------
 SECTION: ".text"
-  inicializaCPU main 
+  inicializaCPU inicializaDisplays inicializaPulsadores demora100us demora1ms 
+  demoraEnms main ModoConfig 
 SECTION: ".init"
   loadByte Init _Startup 
 SECTION: ".abs_section_0"
@@ -411,14 +418,14 @@ SECTION: ".abs_section_fe0c"
 OBJECT LIST SORTED BY ADDRESS
      Name                                      Addr   hSize   dSize     Ref    Section   RLIB
 ---------------------------------------------------------------------------------------------
-     _PTA                                         0       1       1       0   .abs_section_0
-     _PTB                                         1       1       1       0   .abs_section_1
-     _PTC                                         2       1       1       0   .abs_section_2
-     _PTD                                         3       1       1       0   .abs_section_3
-     _DDRA                                        4       1       1       0   .abs_section_4
-     _DDRB                                        5       1       1       0   .abs_section_5
-     _DDRC                                        6       1       1       0   .abs_section_6
-     _DDRD                                        7       1       1       0   .abs_section_7
+     _PTA                                         0       1       1      18   .abs_section_0
+     _PTB                                         1       1       1       8   .abs_section_1
+     _PTC                                         2       1       1       8   .abs_section_2
+     _PTD                                         3       1       1      28   .abs_section_3
+     _DDRA                                        4       1       1       1   .abs_section_4
+     _DDRB                                        5       1       1       1   .abs_section_5
+     _DDRC                                        6       1       1       1   .abs_section_6
+     _DDRD                                        7       1       1       5   .abs_section_7
      _LEDA                                        C       1       1       0   .abs_section_c
      _SPCR                                       10       1       1       0   .abs_section_10
      _SPSCR                                      11       1       1       0   .abs_section_11
@@ -430,9 +437,9 @@ OBJECT LIST SORTED BY ADDRESS
      _SCS2                                       17       1       1       0   .abs_section_17
      _SCDR                                       18       1       1       0   .abs_section_18
      _SCBR                                       19       1       1       0   .abs_section_19
-     _KBSCR                                      1A       1       1       0   .abs_section_1a
-     _KBIER                                      1B       1       1       0   .abs_section_1b
-     _INTSCR2                                    1C       1       1       0   .abs_section_1c
+     _KBSCR                                      1A       1       1       1   .abs_section_1a
+     _KBIER                                      1B       1       1       1   .abs_section_1b
+     _INTSCR2                                    1C       1       1       1   .abs_section_1c
      _CONFIG2                                    1D       1       1       1   .abs_section_1d
      _INTSCR1                                    1E       1       1       0   .abs_section_1e
      _CONFIG1                                    1F       1       1       1   .abs_section_1f
@@ -483,7 +490,13 @@ OBJECT LIST SORTED BY ADDRESS
      Init                                       877      75     117       1   .init       
      _Startup                                   8EC       9       9       0   .init       
      inicializaCPU                              903       7       7       1   .text       
-     main                                       90A       9       9       1   .text       
+     inicializaDisplays                         90A      10      16       1   .text       
+     inicializaPulsadores                       91A       F      15       1   .text       
+     demora100us                                929       9       9       1   .text       
+     demora1ms                                  932       C      12       1   .text       
+     demoraEnms                                 93E      17      23       3   .text       
+     main                                       955       F      15       1   .text       
+     ModoConfig                                 964     13F     319      12   .text       
      _SBSR                                     FE00       1       1       0   .abs_section_fe00
      _SRSR                                     FE01       1       1       0   .abs_section_fe01
      _SBFCR                                    FE03       1       1       0   .abs_section_fe03
@@ -495,22 +508,23 @@ OBJECT LIST SORTED BY ADDRESS
      _BRK                                      FE0C       2       2       0   .abs_section_fe0c
      _BRKSCR                                   FE0E       1       1       0   .abs_section_fe0e
      _LVISR                                    FE0F       1       1       0   .abs_section_fe0f
-     _COPCTL                                   FFFF       1       1       1   .abs_section_ffff
+     _COPCTL                                   FFFF       1       1       0   .abs_section_ffff
 
 *********************************************************************************************
 UNUSED-OBJECTS SECTION
 ---------------------------------------------------------------------------------------------
 NOT USED PROCEDURES
 main.c.o:
-  inicializaSPI inicializaDisplays inicializaPulsadores inicializaLeds 
-  BCDa7seg hexa7seg demora1us demora100us demoraEnus demora1ms demoraEnms 
-  demoraEns muestraCaracterEnDisplay enciendePuntoDecimal apagaSegmentos 
-  apagaDisplays activaDisplay formateaNumero4Digitos 
+  inicializaLeds demora1us demoraEnus demoraEns BCDa7seg hexa7seg 
+  enciendePuntoDecimal apagaSegmentos apagaDisplays activaDisplay 
+  formateaNumero4Digitos muestraCaracterEnDisplay muestraNumeroEnDisplay 
+  barreDisplayPorSegmentos muestraNumero4Digitos datoLCD controlLCD initLCD 
+  enviaCharLCD setLCDCursor printLCD 
 
 *********************************************************************************************
 COPYDOWN SECTION
 ---------------------------------------------------------------------------------------------
-------- ROM-ADDRESS: 0x913 ---- SIZE       2 ---
+------- ROM-ADDRESS: 0xAA3 ---- SIZE       2 ---
 Filling bytes inserted
  0000
 
@@ -520,7 +534,13 @@ OBJECT-DEPENDENCIES SECTION
 Init                      USES _startupData loadByte 
 _Startup                  USES __SEG_END_SSTACK Init main 
 inicializaCPU             USES _CONFIG1 _CONFIG2 
-main                      USES inicializaCPU _COPCTL 
+inicializaDisplays        USES _DDRA _DDRD _DDRB _INTSCR2 _DDRC 
+inicializaPulsadores      USES _DDRD _KBIER _KBSCR 
+demora1ms                 USES demora100us 
+demoraEnms                USES demora1ms 
+main                      USES inicializaCPU inicializaPulsadores 
+                                inicializaDisplays ModoConfig 
+ModoConfig                USES _PTB _PTC _PTD ModoConfig _PTA demoraEnms 
 
 *********************************************************************************************
 DEPENDENCY TREE
@@ -530,7 +550,19 @@ DEPENDENCY TREE
  +- main                
  |  | 
  |  +- inicializaCPU       
- |       
+ |  |    
+ |  +- inicializaPulsadores
+ |  |    
+ |  +- inicializaDisplays  
+ |  |    
+ |  +- ModoConfig          
+ |     | 
+ |     +- demoraEnms          
+ |        | 
+ |        +- demora1ms           
+ |           | 
+ |           +- demora100us         
+ |                
  +- _Startup            
     | 
     +- Init                
@@ -546,5 +578,5 @@ STATISTIC SECTION
 ExeFile:
 --------
 Number of blocks to be downloaded: 4
-Total size of all blocks to be downloaded: 183
+Total size of all blocks to be downloaded: 583
 

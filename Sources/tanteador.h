@@ -1,16 +1,17 @@
-/** ###################################################################
-**     LIBRERIA DE FUNCIONES PARA LA PLACA PLUGIN AP_32 DEL EDUKIT
+/** ########################################################################
+**     LIBRERIA DE FUNCIONES PARA EL PROYECTO 2016 TANTEADOR DE PING-PONG
 **
 **     Archivo    : tanteador.h
-**     Micro      : MC68HC908AP32CFB (44 pines)
+**     Procesador : MC68HC908AP32CFB (placa plugin AP)
 **     Version    : 1.0
-**     Fecha      : 20160909
-**     Autor      : 6to 1ra (A)
+**     Fecha      : 20160911
+**     Autor      : Juan Carlos Torres
 **
-** ###################################################################*/
+** #########################################################################*/
 
-/* WARNING C5703: "Parameter declared but not referenced" */
-#pragma MESSAGE DISABLE C5703
+#pragma MESSAGE DISABLE C5703 /* WARNING C5703: Parameter declared but not referenced */
+
+/** ---------------- Seccion defines ------------------ **/
 
 /* Alias para los leds */
 #define LED1 PTA_PTA1
@@ -56,7 +57,7 @@
 #define ON 1
 #define OFF 0
 
-
+/** ---------------- Seccion inicializacion ------------------ **/
 
 void inicializaCPU(void)
 /** Inicializacion de registros "write once" para el MC68HC908AP64_44 **/
@@ -67,25 +68,6 @@ void inicializaCPU(void)
   CONFIG2= 0x91;   // fuente de clock XTAL
 
 /*** Fin de inicializacion "after reset" ***/
-}
-
-void inicializaSPI(void)
-/** Inicializa el modulo SPI **/
-{
-  char dummy;  // para lectura trivial
-
-  /* SPCR: SPRIE=0,??=0,SPMSTR=0,CPOL=0,CPHA=0,SPWOM=0,SPE=0,SPTIE=0 */
-  SPCR = 0x00;      /* Disable the SPI module */
-  dummy = SPSCR;    /* Dummy read of the SPSCR registr to clear flags */
-  dummy = SPDR;     /* Dummy read of the SPDR registr to clear flags */
-
-  /* SPSCR: SPRF=0,ERRIE=0,OVRF=0,MODF=0,SPTE=0,MODFEN=0,SPR1=1,SPR0=1 */
-  SPSCR = 0x03;
-
-  /* SPCR: SPRIE=0,??=0,SPMSTR=1,CPOL=0,CPHA=1,SPWOM=0,SPE=0,SPTIE=0 */
-  SPCR = 0x28;
-
-  //SPCR_SPE = 1;
 }
 
 void inicializaDisplays(void)
@@ -141,6 +123,71 @@ void inicializaLeds(void)
   /* LD2 (activo alto) */
   DDRA_DDRA2 = 1; LED2 = 0;
 }
+
+/** ---------------- Seccion demoras ------------------ **/
+
+void demora1us()
+/** genera una demora aproximada de 1 useg por instrucciones en aseembler **/
+{
+    unsigned char trivial;
+    asm
+    {
+        lda #$FF       /** 2 ciclos = 0.4 us **/
+        sta trivial    /** 3 ciclos = 0.6 us **/
+    }
+}
+
+void demora100us()
+/** genera una demora aproximada de 100 useg. por ejecución de instrucciones en assembler **/
+{
+    unsigned char contador;
+    asm
+    {
+        lda #$63        /** 63h = 99 veces  (2 ciclos = 0.4 us) **/
+        sta contador    /** contador <- 99 (3 ciclos = 0.6 us) **/
+
+        bucle:
+            /** decrementa en 1 a contador y compara, si es != 0 salta a "bucle" **/
+            dbnz contador, bucle    /** (5 ciclos = 1 us) **/
+    }
+}
+
+void demoraEnus(unsigned int n)
+/** genera una demora aproximada de n useg. **/
+{
+    while(n){
+        demora1us();
+        n--;
+    }
+}
+
+void demora1ms()
+/** genera una demora aproximada de 1 mseg. **/
+{
+    unsigned char i;
+
+    for(i=1; i<=10; i++) demora100us();
+}
+
+void demoraEnms(unsigned int n)
+/** genera una demora aproximada de n mseg. **/
+{
+    while(n){
+        demora1ms();
+        n--;
+    }
+}
+
+void demoraEns(unsigned int n)
+/** genera una demora aproximada de n seg. **/
+{
+    unsigned char i;
+    n*=1000;   // convierto n a milisegundos
+
+    for(i=1; i<=n; i++) demora1ms();
+}
+
+/** ----------- Seccion de funciones para display 7 segmentos --------- **/
 
 unsigned char BCDa7seg(unsigned char numero)
 /** devuelve la combinación para representar el numero en un display 7-seg **/
@@ -215,74 +262,6 @@ unsigned char hexa7seg(unsigned char digito)
     }
 }
 
-void demora1us()
-/** genera una demora aproximada de 1 useg por instrucciones en aseembler **/
-{
-    unsigned char trivial;
-    asm
-    {
-        lda #$FF       /** 2 ciclos = 0.4 us **/
-        sta trivial    /** 3 ciclos = 0.6 us **/
-    }
-}
-
-void demora100us()
-/** genera una demora aproximada de 100 useg. por ejecución de instrucciones en assembler **/
-{
-    unsigned char contador;
-    asm
-    {
-        lda #$63        /** 63h = 99 veces  (2 ciclos = 0.4 us) **/
-        sta contador    /** contador <- 99 (3 ciclos = 0.6 us) **/
-
-        bucle:
-            /** decrementa en 1 a contador y compara, si es != 0 salta a "bucle" **/
-            dbnz contador, bucle    /** (5 ciclos = 1 us) **/
-    }
-}
-
-void demoraEnus(unsigned int n)
-/** genera una demora aproximada de n useg. **/
-{
-    while(n){
-        demora1us();
-        n--;
-    }
-}
-
-void demora1ms()
-/** genera una demora aproximada de 1 mseg. **/
-{
-    unsigned char i;
-
-    for(i=1; i<=10; i++) demora100us();
-}
-
-void demoraEnms(unsigned int n)
-/** genera una demora aproximada de n mseg. **/
-{
-    while(n){
-        demora1ms();
-        n--;
-    }
-}
-
-void demoraEns(unsigned int n)
-/** genera una demora aproximada de n seg. **/
-{
-    unsigned char i;
-    n*=1000;   // convierto n a milisegundos
-
-    for(i=1; i<=n; i++) demora1ms();
-}
-
-void muestraCaracterEnDisplay(unsigned char valor)
-/** usada para mostrar caracteres personalizados **/
-{
-    PTD = valor & 0x0f; // nibble bajo
-    PTA = valor & 0xf0; // nibble alto
-}
-
 void enciendePuntoDecimal(void)
 /** enciende el segmento "dp" en el display **/
 {
@@ -341,8 +320,16 @@ void formateaNumero4Digitos(unsigned int numero, unsigned char digitos[])
   digitos[1] = digitos[1] / 10; // decenas
 }
 
-void muestraNumeroEnDisplay(unsigned char numero, unsigned char puntoDecimal = OFF)
+void muestraCaracterEnDisplay(unsigned char valor)
+/** usada para mostrar caracteres personalizados **/
+{
+    PTD = valor & 0x0f; // nibble bajo
+    PTA = valor & 0xf0; // nibble alto
+}
+
+void muestraNumeroEnDisplay(unsigned char numero, unsigned char puntoDecimal)
 /** muestra el número recibido en algun display del Edukit **/
+//  puntoDecimal = (OFF, ON)
 {
     PTD = BCDa7seg(numero) & 0x0f; // nibble bajo
     PTA = BCDa7seg(numero) & 0xf0; // nibble alto
@@ -350,8 +337,9 @@ void muestraNumeroEnDisplay(unsigned char numero, unsigned char puntoDecimal = O
     if (puntoDecimal) enciendePuntoDecimal();
 }
 
-void barreDisplayPorSegmentos(unsigned char numero, unsigned char puntoDecimal = OFF)
+void barreDisplayPorSegmentos(unsigned char numero, unsigned char puntoDecimal)
 /** muestra el numero recibido como parametro en un display, barriendolo por segmentos **/
+//  puntoDecimal = (OFF, ON)
 {
     unsigned char numeroEn7Segmentos, bitTesteado = 0;
     numeroEn7Segmentos = BCDa7seg(numero);
@@ -405,13 +393,10 @@ void barreDisplayPorSegmentos(unsigned char numero, unsigned char puntoDecimal =
     }
 }
 
-//
-// TODO: pasar por parametro el encendido del punto decimal
-//
-
-void muestraNumero4Digitos(unsigned int numero, unsigned char posicionPuntoDecimal = OFF, unsigned char modo = BARRER_POR_DISPLAY)
+void muestraNumero4Digitos(unsigned int numero, unsigned char posicionPuntoDecimal, unsigned char modo)
 /** muestra el nro recibido en los 4 displays del Edukit **/
-/** modo = 0 -default- (barre por display entero); modo = 1 (barre por segmentos) **/
+// posicionPuntoDecimal = (0 -apagado-, 1, 2, 3, 4)
+// modo = (BARRER_POR_DISPLAY, BARRER_POR_SEGMENTO)
 {
     unsigned char i, digitos[4];
 
@@ -422,7 +407,7 @@ void muestraNumero4Digitos(unsigned int numero, unsigned char posicionPuntoDecim
         // barro por segmentos
         for(i = 1; i <= 4; i++){
             activaDisplay(i);
-            barreDisplayPorSegmentos(digitos[i-1]);
+            barreDisplayPorSegmentos(digitos[i-1], OFF);
             if(posicionPuntoDecimal == i){
               enciendePuntoDecimal();
               demoraEnus(DEMORA_SEGMENTOS_US);
@@ -433,7 +418,7 @@ void muestraNumero4Digitos(unsigned int numero, unsigned char posicionPuntoDecim
     else{
         // barro por display entero
         for(i = 1; i <= 4; i++){
-            muestraNumeroEnDisplay(digitos[i-1]);
+            muestraNumeroEnDisplay(digitos[i-1], OFF);
             activaDisplay(i);
             if(posicionPuntoDecimal == i) enciendePuntoDecimal();
             demoraEnms(DEMORA_DISPLAY_MS);
@@ -441,11 +426,43 @@ void muestraNumero4Digitos(unsigned int numero, unsigned char posicionPuntoDecim
     }
 }
 
+/** ----------- Seccion de funciones para display LCD 16x2 --------- **/
+
 void datoLCD(unsigned char dato)
 /** descompone el byte (dato) y lo pone en el bus de datos del LCD **/
 {
     PTD = dato & 0x0f; // nibble bajo
     PTA = dato & 0xf0; // nibble alto
+}
+
+void controlLCD(unsigned char comando)
+/** Recibe un byte como parámetro para comandar el LCD **/
+{
+    // vuelco el comando en el bus de datos
+    datoLCD(comando);
+
+    // operación de escritura
+    PTB_PTB5 = 0; // Write
+    PTC_PTC1 = 0; //
+
+    // provocamos un flanco en E para que el comando sea leido por el LCD
+    PTC_PTC0 = 1;
+    demoraEnms(2);
+    PTC_PTC0 = 0;
+    demoraEnms(2);
+}
+
+void initLCD(void)
+/** encapsula todos los comandos de inicialización del LCD del Edukit **/
+{
+    demoraEnms(20); // demora para el encendido del LCD
+
+    // comandos de configuración
+    controlLCD(0x02);
+    controlLCD(0x38);
+    controlLCD(0x0c);
+    controlLCD(0x06);
+    controlLCD(0x01);
 }
 
 void enviaCharLCD(unsigned char caracter)
@@ -455,23 +472,6 @@ void enviaCharLCD(unsigned char caracter)
     // operación de escritura
     PTB_PTB5 = 0; // r/w = 0
     PTC_PTC1 = 1; // rs = 1
-
-    // provocamos un flanco en E para que el comando sea leido por el LCD
-    PTC_PTC0 = 1;
-    demoraEnms(2);
-    PTC_PTC0 = 0;
-    demoraEnms(2);
-}
-
-void controlLCD(unsigned char comando)
-/** Recibe un byte como parámetro para comandar el LCD **/
-{
-    // vuelvo el comando en el bus de datos
-    datoLCD(comando);
-
-    // operación de escritura
-    PTB_PTB5 = 0; // Write
-    PTC_PTC1 = 0; //
 
     // provocamos un flanco en E para que el comando sea leido por el LCD
     PTC_PTC0 = 1;
@@ -500,34 +500,8 @@ void setLCDCursor(unsigned char fila, unsigned char columna)
     controlLCD(comando);
 }
 
-void enciendeBacklight(void)
-/** enciende el backlight del LCD del Edukit **/
-{
-    BACKLIGHT_LCD = ON;
-}
-
-void apagaBacklight(void)
-/** enciende el backlight del LCD del Edukit **/
-{
-    BACKLIGHT_LCD = OFF;
-}
-
-void inicializaLCD(void)
-/** encapsula todos los comandos de inicialización del LCD del Edukit **/
-{
-    demoraEnms(20); // demora para el encendido del LCD
-
-    // comandos de configuración
-    controlLCD(0x02);
-    controlLCD(0x38);
-    controlLCD(0x0c);
-    controlLCD(0x06);
-    controlLCD(0x01);
-}
-
 void printLCD(unsigned char fila, unsigned char columna, char *texto)
 /** muestra el texto en la posicion especificada **/
-/** fila: 0..1; columna: 0..15 **/
 {
     unsigned char i=0;
     setLCDCursor(fila, columna);
@@ -537,15 +511,4 @@ void printLCD(unsigned char fila, unsigned char columna, char *texto)
         enviaCharLCD(texto[i]);
         i++;
     }
-}
-
-unsigned char enviaSPI(unsigned char unByte)
-/** El byte recibido se envia por SPI, producto de la trasaccion se recibe otro byte que la funcion retorna **/
-{
-    SPI_SS = 0;
-    SPDR = unByte;
-    // espero al buffer de recepcion
-    while(!SPSCR_SPRF);
-
-    return SPDR;
 }
