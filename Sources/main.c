@@ -60,19 +60,26 @@ PTA_PTA7=0;
 demoraEnms(10);
 
 
-
-
-if(SW4==0){         //P1+
+         if(!antirrebote){
+      
+      if(SW4==0){         //P1+
 pulso++;   
 demoraEnms(50);
-}
-
-if(pulso==4){        //P1 limite
-pulso=0;     
-}
-
-
-
+        antirrebote=1;
+        i=0;
+      }
+    } else{    
+      i++;
+      if(i==15) antirrebote=0;
+    }
+  
+      
+      if(pulso==4){        //P1 limite
+pulso=0;
+    }
+  
+  
+  
 if(pulso==0) {  //Modo de juego en 05  
 PTB_PTB7=0;
 PTB_PTB5=0;
@@ -208,7 +215,7 @@ retorno=21;
 }
 
 
-if(SW3==1){        //P1-  Retorno del modo de juego
+if(SW3==0){        //P1-  Retorno del modo de juego
 pulso=0;
 demoraEnms(50);
 return (retorno);

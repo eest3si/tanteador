@@ -1,5 +1,5 @@
 
-PROGRAM "C:\Users\jctor\Google Drive\EEST3SI\AED3\Proyectos\Tanteador ping-pong\Tanteador\bin\Project.abs"
+PROGRAM "C:\Users\Alumno\Desktop\tanteador\bin\Project.abs"
 
 *********************************************************************************************
 TARGET SECTION
@@ -23,7 +23,7 @@ Entry point: 0x8EC (_Startup)
 _startupData is allocated at 0x8F5 and uses 6 Bytes
 extern struct _tagStartup {
   unsigned nofZeroOut     0
-  _Copy    *toCopyDownBeg 0xAA3
+  _Copy    *toCopyDownBeg 0xABA
 } _startupData;
 
 *********************************************************************************************
@@ -32,8 +32,8 @@ Section Name                    Size  Type     From       To       Segment
 ---------------------------------------------------------------------------------------------
 .init                            149     R      0x860      0x8F4   ROM
 .startData                        14     R      0x8F5      0x902   ROM
-.text                            416     R      0x903      0xAA2   ROM
-.copy                              2     R      0xAA3      0xAA4   ROM
+.text                            439     R      0x903      0xAB9   ROM
+.copy                              2     R      0xABA      0xABB   ROM
 .abs_section_0                     1   N/I        0x0        0x0   .absSeg0
 .abs_section_1                     1   N/I        0x1        0x1   .absSeg1
 .abs_section_2                     1   N/I        0x2        0x2   .absSeg2
@@ -118,7 +118,7 @@ Section Name                    Size  Type     From       To       Segment
 .vectSeg80_vect                    2     R     0xFFFE     0xFFFF   .vectSeg80
 
 Summary of section sizes per section type:
-READ_ONLY (R):         247 (dec:      583)
+READ_ONLY (R):         25E (dec:      606)
 READ_WRITE (R/W):       50 (dec:       80)
 NO_INIT (N/I):          5B (dec:       91)
 
@@ -141,7 +141,7 @@ MODULE:                 -- main.c.o --
      demora1ms                                  932       C      12       1   .text       
      demoraEnms                                 93E      17      23       3   .text       
      main                                       955       F      15       1   .text       
-     ModoConfig                                 964     13F     319      12   .text       
+     ModoConfig                                 964     156     342      12   .text       
 - VARIABLES:
 MODULE:                 -- MC68HC908AP32.C.o --
 - PROCEDURES:
@@ -240,7 +240,7 @@ MODULE:                 -- Start08.c.o --
 MODULE STATISTIC
   Name                                      Data   Code  Const
 ---------------------------------------------------------------------------------------------
-  main.c.o                                     0    416      0
+  main.c.o                                     0    439      0
   MC68HC908AP32.C.o                           91      0      0
   Start08.c.o                                  0    149      0
   other                                       80     16      2
@@ -496,7 +496,7 @@ OBJECT LIST SORTED BY ADDRESS
      demora1ms                                  932       C      12       1   .text       
      demoraEnms                                 93E      17      23       3   .text       
      main                                       955       F      15       1   .text       
-     ModoConfig                                 964     13F     319      12   .text       
+     ModoConfig                                 964     156     342      12   .text       
      _SBSR                                     FE00       1       1       0   .abs_section_fe00
      _SRSR                                     FE01       1       1       0   .abs_section_fe01
      _SBFCR                                    FE03       1       1       0   .abs_section_fe03
@@ -524,7 +524,7 @@ main.c.o:
 *********************************************************************************************
 COPYDOWN SECTION
 ---------------------------------------------------------------------------------------------
-------- ROM-ADDRESS: 0xAA3 ---- SIZE       2 ---
+------- ROM-ADDRESS: 0xABA ---- SIZE       2 ---
 Filling bytes inserted
  0000
 
@@ -577,6 +577,6 @@ STATISTIC SECTION
 
 ExeFile:
 --------
-Number of blocks to be downloaded: 4
-Total size of all blocks to be downloaded: 583
+Number of blocks to be downloaded: 5
+Total size of all blocks to be downloaded: 606
 
