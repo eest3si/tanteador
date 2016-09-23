@@ -1,5 +1,5 @@
 
-PROGRAM "C:\Users\jctor\Google Drive\EEST3SI\AED3\Proyectos\Tanteador ping-pong\Tanteador\bin\Project.abs"
+PROGRAM "C:\Users\Alumno\Desktop\colegio\clases 2015\proyectos c\nuevoproyecto\tanteadorpingpong\tantnueva\tanteador\bin\Project.abs"
 
 *********************************************************************************************
 TARGET SECTION
@@ -13,6 +13,7 @@ Linker      : SmartLinker V-5.0.37 Build 9279, Oct  7 2009
 FILE SECTION
 ---------------------------------------------------------------------------------------------
 main.c.o                                Model: SMALL,         Lang: ANSI-C
+RTSHC08.C.o (ansii.lib)                 Model: SMALL,         Lang: ANSI-C
 MC68HC908AP32.C.o                       Model: SMALL,         Lang: ANSI-C
 Start08.c.o                             Model: SMALL,         Lang: ANSI-C
 
@@ -23,7 +24,7 @@ Entry point: 0x8EC (_Startup)
 _startupData is allocated at 0x8F5 and uses 6 Bytes
 extern struct _tagStartup {
   unsigned nofZeroOut     0
-  _Copy    *toCopyDownBeg 0xAA3
+  _Copy    *toCopyDownBeg 0xCD5
 } _startupData;
 
 *********************************************************************************************
@@ -32,8 +33,8 @@ Section Name                    Size  Type     From       To       Segment
 ---------------------------------------------------------------------------------------------
 .init                            149     R      0x860      0x8F4   ROM
 .startData                        14     R      0x8F5      0x902   ROM
-.text                            416     R      0x903      0xAA2   ROM
-.copy                              2     R      0xAA3      0xAA4   ROM
+.text                            978     R      0x903      0xCD4   ROM
+.copy                              2     R      0xCD5      0xCD6   ROM
 .abs_section_0                     1   N/I        0x0        0x0   .absSeg0
 .abs_section_1                     1   N/I        0x1        0x1   .absSeg1
 .abs_section_2                     1   N/I        0x2        0x2   .absSeg2
@@ -118,7 +119,7 @@ Section Name                    Size  Type     From       To       Segment
 .vectSeg80_vect                    2     R     0xFFFE     0xFFFF   .vectSeg80
 
 Summary of section sizes per section type:
-READ_ONLY (R):         247 (dec:      583)
+READ_ONLY (R):         479 (dec:     1145)
 READ_WRITE (R/W):       50 (dec:       80)
 NO_INIT (N/I):          5B (dec:       91)
 
@@ -137,19 +138,39 @@ MODULE:                 -- main.c.o --
      inicializaCPU                              903       7       7       1   .text       
      inicializaDisplays                         90A      10      16       1   .text       
      inicializaPulsadores                       91A       F      15       1   .text       
-     demora100us                                929       9       9       1   .text       
-     demora1ms                                  932       C      12       1   .text       
-     demoraEnms                                 93E      17      23       3   .text       
-     main                                       955       F      15       1   .text       
-     ModoConfig                                 964     13F     319      12   .text       
+     demora1us                                  929       7       7       1   .text       
+     demora100us                                930       9       9       1   .text       
+     demoraEnus                                 939      17      23       2   .text       
+     demora1ms                                  950       C      12       1   .text       
+     demoraEnms                                 95C      17      23       1   .text       
+     BCDa7seg                                   973      33      51       3   .text       
+     enciendePuntoDecimal                       9A6       3       3       3   .text       
+     apagaSegmentos                             9A9      11      17       2   .text       
+     apagaDisplays                              9BA       9       9       2   .text       
+     activaDisplay                              9C3      26      38       2   .text       
+     formateaNumero4Digitos                     9E9      80     128       1   .text       
+     muestraNumeroEnDisplay                     A69      1D      29       1   .text       
+     barreDisplayPorSegmentos                   A86      61      97       1   .text       
+     muestraNumero4Digitos                      AE7      7C     124       1   .text       
+     main                                       B63      11      17       1   .text       
+     ModoPlay                                   B74      93     147       1   .text       
+- VARIABLES:
+MODULE:                 -- RTSHC08.C.o (ansii.lib) --
+- PROCEDURES:
+     _IDIVMOD                                   C07      69     105       2   .text       
+     _IDIVU                                     C70      10      16       2   .text       
+     _IMODU                                     C80      15      21       2   .text       
+     _IDIVU_8                                   C95       C      12       1   .text       
+     _IMODU_8                                   CA1      10      16       1   .text       
+     _Jump_Table_Header_Offset                  CB1      24      36       3   .text       
 - VARIABLES:
 MODULE:                 -- MC68HC908AP32.C.o --
 - PROCEDURES:
 - VARIABLES:
-     _PTA                                         0       1       1      18   .abs_section_0
-     _PTB                                         1       1       1       8   .abs_section_1
-     _PTC                                         2       1       1       8   .abs_section_2
-     _PTD                                         3       1       1      28   .abs_section_3
+     _PTA                                         0       1       1      10   .abs_section_0
+     _PTB                                         1       1       1       4   .abs_section_1
+     _PTC                                         2       1       1       4   .abs_section_2
+     _PTD                                         3       1       1      13   .abs_section_3
      _DDRA                                        4       1       1       1   .abs_section_4
      _DDRB                                        5       1       1       1   .abs_section_5
      _DDRC                                        6       1       1       1   .abs_section_6
@@ -240,7 +261,8 @@ MODULE:                 -- Start08.c.o --
 MODULE STATISTIC
   Name                                      Data   Code  Const
 ---------------------------------------------------------------------------------------------
-  main.c.o                                     0    416      0
+  main.c.o                                     0    772      0
+  RTSHC08.C.o (ansii.lib)                      0    206      0
   MC68HC908AP32.C.o                           91      0      0
   Start08.c.o                                  0    149      0
   other                                       80     16      2
@@ -249,8 +271,11 @@ MODULE STATISTIC
 SECTION USE IN OBJECT-ALLOCATION SECTION
 ---------------------------------------------------------------------------------------------
 SECTION: ".text"
-  inicializaCPU inicializaDisplays inicializaPulsadores demora100us demora1ms 
-  demoraEnms main ModoConfig 
+  inicializaCPU inicializaDisplays inicializaPulsadores demora1us demora100us 
+  demoraEnus demora1ms demoraEnms BCDa7seg enciendePuntoDecimal apagaSegmentos 
+  apagaDisplays activaDisplay formateaNumero4Digitos muestraNumeroEnDisplay 
+  barreDisplayPorSegmentos muestraNumero4Digitos main ModoPlay _IDIVMOD _IDIVU 
+  _IMODU _IDIVU_8 _IMODU_8 _Jump_Table_Header_Offset 
 SECTION: ".init"
   loadByte Init _Startup 
 SECTION: ".abs_section_0"
@@ -418,10 +443,10 @@ SECTION: ".abs_section_fe0c"
 OBJECT LIST SORTED BY ADDRESS
      Name                                      Addr   hSize   dSize     Ref    Section   RLIB
 ---------------------------------------------------------------------------------------------
-     _PTA                                         0       1       1      18   .abs_section_0
-     _PTB                                         1       1       1       8   .abs_section_1
-     _PTC                                         2       1       1       8   .abs_section_2
-     _PTD                                         3       1       1      28   .abs_section_3
+     _PTA                                         0       1       1      10   .abs_section_0
+     _PTB                                         1       1       1       4   .abs_section_1
+     _PTC                                         2       1       1       4   .abs_section_2
+     _PTD                                         3       1       1      13   .abs_section_3
      _DDRA                                        4       1       1       1   .abs_section_4
      _DDRB                                        5       1       1       1   .abs_section_5
      _DDRC                                        6       1       1       1   .abs_section_6
@@ -492,11 +517,28 @@ OBJECT LIST SORTED BY ADDRESS
      inicializaCPU                              903       7       7       1   .text       
      inicializaDisplays                         90A      10      16       1   .text       
      inicializaPulsadores                       91A       F      15       1   .text       
-     demora100us                                929       9       9       1   .text       
-     demora1ms                                  932       C      12       1   .text       
-     demoraEnms                                 93E      17      23       3   .text       
-     main                                       955       F      15       1   .text       
-     ModoConfig                                 964     13F     319      12   .text       
+     demora1us                                  929       7       7       1   .text       
+     demora100us                                930       9       9       1   .text       
+     demoraEnus                                 939      17      23       2   .text       
+     demora1ms                                  950       C      12       1   .text       
+     demoraEnms                                 95C      17      23       1   .text       
+     BCDa7seg                                   973      33      51       3   .text       
+     enciendePuntoDecimal                       9A6       3       3       3   .text       
+     apagaSegmentos                             9A9      11      17       2   .text       
+     apagaDisplays                              9BA       9       9       2   .text       
+     activaDisplay                              9C3      26      38       2   .text       
+     formateaNumero4Digitos                     9E9      80     128       1   .text       
+     muestraNumeroEnDisplay                     A69      1D      29       1   .text       
+     barreDisplayPorSegmentos                   A86      61      97       1   .text       
+     muestraNumero4Digitos                      AE7      7C     124       1   .text       
+     main                                       B63      11      17       1   .text       
+     ModoPlay                                   B74      93     147       1   .text       
+     _IDIVMOD                                   C07      69     105       2   .text       
+     _IDIVU                                     C70      10      16       2   .text       
+     _IMODU                                     C80      15      21       2   .text       
+     _IDIVU_8                                   C95       C      12       1   .text       
+     _IMODU_8                                   CA1      10      16       1   .text       
+     _Jump_Table_Header_Offset                  CB1      24      36       3   .text       
      _SBSR                                     FE00       1       1       0   .abs_section_fe00
      _SRSR                                     FE01       1       1       0   .abs_section_fe01
      _SBFCR                                    FE03       1       1       0   .abs_section_fe03
@@ -515,16 +557,33 @@ UNUSED-OBJECTS SECTION
 ---------------------------------------------------------------------------------------------
 NOT USED PROCEDURES
 main.c.o:
-  inicializaLeds demora1us demoraEnus demoraEns BCDa7seg hexa7seg 
-  enciendePuntoDecimal apagaSegmentos apagaDisplays activaDisplay 
-  formateaNumero4Digitos muestraCaracterEnDisplay muestraNumeroEnDisplay 
-  barreDisplayPorSegmentos muestraNumero4Digitos datoLCD controlLCD initLCD 
-  enviaCharLCD setLCDCursor printLCD 
+  inicializaLeds demoraEns hexa7seg muestraCaracterEnDisplay datoLCD 
+  controlLCD initLCD enviaCharLCD setLCDCursor printLCD ModoConfig 
+RTSHC08.C.o (ansii.lib):
+  _PUSH_ARGS_L _PUSH_ARGS_D _ENTER_UNARY_L _ENTER_UNARY_L64 _ENTER_UNARY_L64_4 
+  _ENTER_BINARY_L _ENTER_BINARY_L_RC _ENTER_BINARY_L_LC _ENTER_BINARY_L64 
+  _ENTER_BINARY_L64_LC _ENTER_BINARY_L64_RC _SPLITSIGN _LADD_k_is_k_plus_j 
+  _k_is_k_plus_j_l _k_is_k_plus_j_i _LSUB_k_is_k_minus_j _LAND_k_is_k_and_j 
+  _LOR_k_is_k_or_j _LXOR_k_is_k_xor_j _LMUL_k_is_k_mul_j _LDIVMOD _NEG_L_HX 
+  _ABS_L_HX _SPLITSIGN_L _LMODU_k_is_k_mod_j _LDIVU_k_is_k_div_j 
+  _LMODS_k_is_k_mod_j _LDIVS_k_is_k_div_j _LCMP_k_rel_j _BMULS _BDIVS _BMODS 
+  _IMUL _IDIVS _IMODS _IASR _ILSR _ILSL _ICMP _LINC _LDEC _LNEG _LNOT _LADD 
+  _LADD_RC _LSUB _LSUB_LC _LSUB_RC _LAND _LAND_RC _LOR _LOR_RC _LXOR _LXOR_RC 
+  _LMUL _LMUL_RC _LDIVS _LDIVS_LC _LDIVS_RC _LDIVU _LDIVU_LC _LDIVU_RC _LMODS 
+  _LMODS_LC _LMODS_RC _LMODU _LMODU_LC _LMODU_RC _LASR _LLSR _LLSL _LCMP 
+  _LCMP_RC _COPY _COPY_L _POP32 _POP64 _STORE32 _STORE64 _SEXT8_32 _SEXT16_32 
+  _CALL _Jump_Table_Addr _Jump_Table_Offset _Jump_Table_Header_Addr 
+  _Search_Table_16_Addr _Search_Table_16_Offset _Search_Table_8_Addr 
+  _Search_Table_8_Offset _PUSH_CC _POP_CC _CONV_FAR_TO_NEAR _CONV_FAR_TO_LINEAR 
+  _CONV_LINEAR_TO_FAR 
+NOT USED VARIABLES
+RTSHC08.C.o (ansii.lib):
+  _PowOfTwo_8 _PowOfTwo_16 _PowOfTwo_32 errno 
 
 *********************************************************************************************
 COPYDOWN SECTION
 ---------------------------------------------------------------------------------------------
-------- ROM-ADDRESS: 0xAA3 ---- SIZE       2 ---
+------- ROM-ADDRESS: 0xCD5 ---- SIZE       2 ---
 Filling bytes inserted
  0000
 
@@ -536,11 +595,30 @@ _Startup                  USES __SEG_END_SSTACK Init main
 inicializaCPU             USES _CONFIG1 _CONFIG2 
 inicializaDisplays        USES _DDRA _DDRD _DDRB _INTSCR2 _DDRC 
 inicializaPulsadores      USES _DDRD _KBIER _KBSCR 
+demoraEnus                USES demora1us 
 demora1ms                 USES demora100us 
 demoraEnms                USES demora1ms 
+BCDa7seg                  USES _Jump_Table_Header_Offset 
+enciendePuntoDecimal      USES _PTA 
+apagaSegmentos            USES _PTA _PTD 
+apagaDisplays             USES _PTC _PTB 
+activaDisplay             USES apagaDisplays _Jump_Table_Header_Offset _PTC 
+                                _PTB 
+formateaNumero4Digitos    USES _IDIVU _IMODU _IMODU_8 _IDIVU_8 
+muestraNumeroEnDisplay    USES BCDa7seg _PTD _PTA enciendePuntoDecimal 
+barreDisplayPorSegmentos  USES BCDa7seg apagaSegmentos 
+                                _Jump_Table_Header_Offset _PTD _PTA demoraEnus 
+muestraNumero4Digitos     USES formateaNumero4Digitos apagaDisplays 
+                                activaDisplay barreDisplayPorSegmentos enciendePuntoDecimal 
+                                demoraEnus apagaSegmentos muestraNumeroEnDisplay 
+                                demoraEnms 
 main                      USES inicializaCPU inicializaPulsadores 
-                                inicializaDisplays ModoConfig 
-ModoConfig                USES _PTB _PTC _PTD ModoConfig _PTA demoraEnms 
+                                inicializaDisplays ModoPlay 
+ModoPlay                  USES muestraNumero4Digitos _PTD 
+_IDIVU                    USES _IDIVMOD 
+_IMODU                    USES _IDIVMOD 
+_IDIVU_8                  USES _IDIVU 
+_IMODU_8                  USES _IMODU 
 
 *********************************************************************************************
 DEPENDENCY TREE
@@ -555,14 +633,68 @@ DEPENDENCY TREE
  |  |    
  |  +- inicializaDisplays  
  |  |    
- |  +- ModoConfig          
+ |  +- ModoPlay            
  |     | 
- |     +- demoraEnms          
+ |     +- muestraNumero4Digitos
  |        | 
- |        +- demora1ms           
+ |        +- formateaNumero4Digitos
+ |        |  | 
+ |        |  +- _IDIVU              
+ |        |  |  | 
+ |        |  |  +- _IDIVMOD            
+ |        |  |       
+ |        |  +- _IMODU              
+ |        |  |  | 
+ |        |  |  +- _IDIVMOD             (see above)
+ |        |  |     
+ |        |  +- _IMODU_8            
+ |        |  |  | 
+ |        |  |  +- _IMODU               (see above)
+ |        |  |     
+ |        |  +- _IDIVU_8            
+ |        |     | 
+ |        |     +- _IDIVU               (see above)
+ |        |        
+ |        +- apagaDisplays       
+ |        |    
+ |        +- activaDisplay       
+ |        |  | 
+ |        |  +- apagaDisplays        (see above)
+ |        |  |  
+ |        |  +- _Jump_Table_Header_Offset
+ |        |       
+ |        +- barreDisplayPorSegmentos
+ |        |  | 
+ |        |  +- BCDa7seg            
+ |        |  |  | 
+ |        |  |  +- _Jump_Table_Header_Offset (see above)
+ |        |  |     
+ |        |  +- apagaSegmentos      
+ |        |  |    
+ |        |  +- _Jump_Table_Header_Offset (see above)
+ |        |  |  
+ |        |  +- demoraEnus          
+ |        |     | 
+ |        |     +- demora1us           
+ |        |          
+ |        +- enciendePuntoDecimal
+ |        |    
+ |        +- demoraEnus           (see above)
+ |        |  
+ |        +- apagaSegmentos       (see above)
+ |        |  
+ |        +- muestraNumeroEnDisplay
+ |        |  | 
+ |        |  +- BCDa7seg             (see above)
+ |        |  |  
+ |        |  +- enciendePuntoDecimal (see above)
+ |        |     
+ |        +- demoraEnms          
  |           | 
- |           +- demora100us         
- |                
+ |           +- demora1ms           
+ |              | 
+ |              +- demora100us         
+ |                   
  +- _Startup            
     | 
     +- Init                
@@ -577,6 +709,6 @@ STATISTIC SECTION
 
 ExeFile:
 --------
-Number of blocks to be downloaded: 4
-Total size of all blocks to be downloaded: 583
+Number of blocks to be downloaded: 5
+Total size of all blocks to be downloaded: 1145
 

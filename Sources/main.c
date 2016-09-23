@@ -3,21 +3,103 @@
 #include "tanteador.h"
 
 unsigned char ModoConfig(void);
+void ModoPlay(unsigned char );
 
 void main(void) {
-
+                                  
   DisableInterrupts;
   inicializaCPU();
   inicializaPulsadores();
   inicializaDisplays();
 
   for(;;) {
-    ModoConfig();
+   // ModoConfig();
+      ModoPlay(14);
   } /* loop forever */
 } /* fin main */
 
-
+ 
+                                
 /** --------- seccion funciones -------------- **/
+
+void ModoPlay(unsigned char modoConfig)  {
+  char player1=0;
+  char player2=0;
+  unsigned int numero=0;
+  unsigned char i=0,antirrebote=0;
+   
+   if (player1<0)
+   player1=0;
+   if(player2<0)
+   player2=0;
+   
+   
+   while(1){
+    
+     numero=player1*100+player2;               
+   muestraNumero4Digitos(numero,0,BARRER_POR_DISPLAY);
+                           
+         
+  if(!antirrebote){
+  if(SW1==0){
+      player1++;
+      antirrebote=1;
+      i=0;
+  }
+    } else {
+      
+      i++;
+      if(i==50) antirrebote=0;
+    }
+          if(!antirrebote){
+     if(SW2==0){
+      player1--;
+      antirrebote=1;
+      i=0;
+      
+     }
+  }
+     else {
+      
+      i++;
+      if(i==50) antirrebote=0;
+    }
+    if(!antirrebote){
+     if(SW3==0){
+      player2++; 
+      antirrebote=1;
+      i=0;
+     
+  }     
+    }
+     else {
+      
+      i++;
+      if(i==50) antirrebote=0;
+    }
+    if(!antirrebote){
+     if(SW4==0){
+      player2--;
+      antirrebote=1;
+      i=0;
+      
+  }    
+    }
+     else {
+      
+      i++;
+      if(i==50) antirrebote=0;
+    }
+    
+    if (player1==modoConfig)
+    break;
+    
+    if (player2==modoConfig)
+    break;
+  }
+}
+
+
 unsigned char ModoConfig(void)
 {
 
