@@ -48,6 +48,12 @@
 #define SW3 PTD_PTD6
 #define SW4 PTD_PTD7
 
+/* Alias para los pulsadores */
+#define P2_MENOS PTD_PTD4
+#define P2_MAS   PTD_PTD5
+#define P1_MENOS PTD_PTD6
+#define P1_MAS   PTD_PTD7
+
 /* Alias modulo SPI */
 #define SPI_SS PTC_PTC4
 
