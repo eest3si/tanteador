@@ -2,6 +2,7 @@
 #include "derivative.h" /* include peripheral declarations */
 #include "tanteador.h"
 
+void MuestraModoConfig(unsigned char, unsigned char);
 unsigned char ModoConfig(void);
 void ModoPlay(unsigned char );
 
@@ -13,8 +14,8 @@ void main(void) {
   inicializaDisplays();
 
   for(;;) {
-   // ModoConfig();
-      ModoPlay(14);
+    ModoConfig();
+   // ModoPlay(14);
   } /* loop forever */
 } /* fin main */
 
@@ -107,205 +108,94 @@ unsigned char antirrebote=0,  i=0, retorno=0;
 unsigned int numero=0;
 
 int pulso=0;
-int enter=0;
+int modo=0;
 
 while(1){
 
-PTB_PTB7=1;             //Letra C
-PTB_PTB5=0;
-PTC_PTC1=0;
-PTC_PTC0=0;
-
-PTD_PTD0=1;
-PTD_PTD1=0;
-PTD_PTD2=0;
-PTD_PTD3=1;
-PTA_PTA4=1;
-PTA_PTA5=1;
-PTA_PTA6=0;
-PTA_PTA7=0;
-demoraEnms(10);
-
-PTB_PTB7=0;             //Letra P
-PTB_PTB5=1;
-PTC_PTC1=0;
-PTC_PTC0=0;
-
-PTD_PTD0=1;
-PTD_PTD1=1;
-PTD_PTD2=0;
-PTD_PTD3=0;
-PTA_PTA4=1;
-PTA_PTA5=1;
-PTA_PTA6=1;
-PTA_PTA7=0;
-demoraEnms(10);
-
-
          if(!antirrebote){
       
-      if(SW4==0){         //P1+
-pulso++;   
-demoraEnms(50);
+        if(SW4==0){         //P1+
+        pulso++;   
+        demoraEnms(50);
         antirrebote=1;
         i=0;
-      }
-    } else{    
-      i++;
-      if(i==15) antirrebote=0;
-    }
+        }
+        } else{    
+        i++;
+        if(i==15) antirrebote=0;
+        }
   
       
       if(pulso==4){        //P1 limite
-pulso=0;
+      pulso=0;
+      }
+  
+
+       if(SW3==0){        //P1-  Retorno del modo de juego
+       pulso=0;
+       demoraEnms(50);
+       return (numero);
+}
+
+
+                   
+if(pulso==0){numero=5;}
+if(pulso==1){numero=7;}
+if(pulso==2){numero=14;}
+if(pulso==3){numero=21;}
+
+                   
+MuestraModoConfig(numero,modo);
+
+}
+}
+
+
+
+
+void MuestraModoConfig(unsigned char puntos, unsigned char modo)
+{
+    unsigned char i, digitos[4];
+
+//    formateaNumero4Digitos(numero, digitos);
+/*
+    apagaDisplays();
+                                                      
+    if(modo == BARRER_POR_SEGMENTO){
+        // barro por segmentos
+        for(i = 1; i <= 4; i++){
+            activaDisplay(i);
+            barreDisplayPorSegmentos(digitos[i-1], OFF);
+            if(posicionPuntoDecimal == i)
+            {
+              enciendePuntoDecimal();
+              demoraEnus(DEMORA_SEGMENTOS_US);
+              apagaSegmentos(); // para evitar parpadeo espureo en el proximo ciclo
+            }
+        }
     }
+    
+  */
+   // else{
   
-  
-  
-if(pulso==0) {  //Modo de juego en 05  
-PTB_PTB7=0;
-PTB_PTB5=0;
-PTC_PTC1=0;
-PTC_PTC0=1;
-
-PTD_PTD0=1;
-PTD_PTD1=0;
-PTD_PTD2=1;
-PTD_PTD3=1;
-PTA_PTA4=0;
-PTA_PTA5=1;
-PTA_PTA6=1;
-PTA_PTA7=0;
-demoraEnms(10);
-
-PTB_PTB7=0;
-PTB_PTB5=0;
-PTC_PTC1=1;
-PTC_PTC0=0;
-
-PTD_PTD0=1;
-PTD_PTD1=1;
-PTD_PTD2=1;
-PTD_PTD3=1;
-PTA_PTA4=1;
-PTA_PTA5=1;
-PTA_PTA6=0;
-PTA_PTA7=0;
-demoraEnms(10);
-retorno = 5;
-}
-
-
-if(pulso==1){   //Modo de juego en 07
-PTB_PTB7=0;
-PTB_PTB5=0;
-PTC_PTC1=0;
-PTC_PTC0=1;
-
-PTD_PTD0=1;
-PTD_PTD1=1;
-PTD_PTD2=1;
-PTD_PTD3=0;
-PTA_PTA4=0;
-PTA_PTA5=0;
-PTA_PTA6=0;
-PTA_PTA7=0;
-demoraEnms(10);
-PTB_PTB7=0;
-PTB_PTB5=0;
-PTC_PTC1=1;
-PTC_PTC0=0;
-
-PTD_PTD0=1;
-PTD_PTD1=1;
-PTD_PTD2=1;
-PTD_PTD3=1;
-PTA_PTA4=1;
-PTA_PTA5=1;
-PTA_PTA6=0;
-PTA_PTA7=0;
-demoraEnms(10);
-retorno=7;  
-}
-
-
-if(pulso==2){   //Modo de juego en 14 
-PTB_PTB7=0;
-PTB_PTB5=0;
-PTC_PTC1=0;
-PTC_PTC0=1;
-
-PTD_PTD0=0;
-PTD_PTD1=1;
-PTD_PTD2=1;
-PTD_PTD3=0;
-PTA_PTA4=0;
-PTA_PTA5=1;
-PTA_PTA6=1;
-PTA_PTA7=0;
-demoraEnms(10);
-
-PTB_PTB7=0;
-PTB_PTB5=0;
-PTC_PTC1=1;
-PTC_PTC0=0;
-
-PTD_PTD0=0;
-PTD_PTD1=1;
-PTD_PTD2=1;
-PTD_PTD3=0;
-PTA_PTA4=0;
-PTA_PTA5=0;
-PTA_PTA6=0;
-PTA_PTA7=0;
-demoraEnms(10);
-retorno=14;
-}
-
-
-if(pulso==3){   //Modo de juego en 21
-PTB_PTB7=0;
-PTB_PTB5=0;
-PTC_PTC1=0;
-PTC_PTC0=1;
-
-PTD_PTD0=0;
-PTD_PTD1=1;
-PTD_PTD2=1;
-PTD_PTD3=0;
-PTA_PTA4=0;
-PTA_PTA5=0;
-PTA_PTA6=0;
-PTA_PTA7=0;
-demoraEnms(10);
-
-PTB_PTB7=0;
-PTB_PTB5=0;
-PTC_PTC1=1;
-PTC_PTC0=0;
-
-PTD_PTD0=1;
-PTD_PTD1=1;
-PTD_PTD2=0;
-PTD_PTD3=1;
-PTA_PTA4=1;
-PTA_PTA5=0;
-PTA_PTA6=1;
-PTA_PTA7=0;
-demoraEnms(10);
-retorno=21;
-}
-
-
-if(SW3==0){        //P1-  Retorno del modo de juego
-pulso=0;
-demoraEnms(50);
-return (retorno);
-}
-
-}
+            muestraCaracterEnDisplay(0x39);
+            activaDisplay(4);
+            demoraEnms(DEMORA_DISPLAY_MS);
+            muestraCaracterEnDisplay(0x73);
+            activaDisplay(3);
+            demoraEnms(DEMORA_DISPLAY_MS);
+            muestraNumeroEnDisplay(puntos/10, OFF);
+            activaDisplay(2);
+            demoraEnms(DEMORA_DISPLAY_MS);
+            muestraNumeroEnDisplay(puntos%10, OFF);
+            activaDisplay(1);
+            demoraEnms(DEMORA_DISPLAY_MS);
+            
+            
+    //    }
+    }
 
 
 
 
-} /* fin ModoConfig */
+ /* fin ModoConfig */
