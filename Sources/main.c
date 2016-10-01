@@ -5,17 +5,26 @@
 void MuestraModoConfig(unsigned char, unsigned char);
 unsigned char ModoConfig(void);
 void ModoPlay(unsigned char );
+  unsigned char pepe;
 
 void main(void) {
-                                  
+    unsigned char i=0,antirrebote=0;                              
   DisableInterrupts;
   inicializaCPU();
   inicializaPulsadores();
   inicializaDisplays();
+  
+ 
+  
+  
 
   for(;;) {
-    ModoConfig();
-   // ModoPlay(14);
+    pepe=ModoConfig();
+     
+    
+    ModoPlay(pepe +1);
+     
+   
   } /* loop forever */
 } /* fin main */
 
@@ -33,8 +42,7 @@ void ModoPlay(unsigned char modoConfig)  {
    player1=0;
    if(player2<0)
    player2=0;
-   
-   
+
    while(1){
     
      numero=player1*100+player2;               
@@ -133,7 +141,7 @@ while(1){
 
        if(SW3==0){        //P1-  Retorno del modo de juego
        pulso=0;
-       demoraEnms(50);
+       demoraEnms(150);
        return (numero);
 }
 
