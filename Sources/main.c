@@ -37,18 +37,17 @@ void ModoPlay(unsigned char modoConfig)  {
   char player2=0;
   unsigned int numero=0;
   unsigned char i=0,antirrebote=0;
+  
+    
    
-   if (player1<0)
-   player1=0;
-   if(player2<0)
-   player2=0;
 
    while(1){
     
      numero=player1*100+player2;               
    muestraNumero4Digitos(numero,0,BARRER_POR_DISPLAY);
                            
-         
+ 
+      
   if(!antirrebote){
   if(SW1==0){
       player1++;
@@ -60,22 +59,30 @@ void ModoPlay(unsigned char modoConfig)  {
       i++;
       if(i==50) antirrebote=0;
     }
+   
           if(!antirrebote){
      if(SW2==0){
+     if (player1==0) {
+      
+     i++;
+     }
+     else{
       player1--;
       antirrebote=1;
       i=0;
-      
+     }
      }
   }
+  
      else {
       
       i++;
       if(i==50) antirrebote=0;
     }
+   
     if(!antirrebote){
      if(SW3==0){
-      player2++; 
+      player2++;
       antirrebote=1;
       i=0;
      
@@ -86,11 +93,19 @@ void ModoPlay(unsigned char modoConfig)  {
       i++;
       if(i==50) antirrebote=0;
     }
+     
     if(!antirrebote){
      if(SW4==0){
+     if (player2==0) {
+      
+     i++;
+     }
+     else{
+      
       player2--;
       antirrebote=1;
       i=0;
+     }
       
   }    
     }
@@ -99,6 +114,8 @@ void ModoPlay(unsigned char modoConfig)  {
       i++;
       if(i==50) antirrebote=0;
     }
+      
+     
     
     if (player1==modoConfig)
     break;
@@ -201,8 +218,8 @@ void MuestraModoConfig(unsigned char puntos, unsigned char modo)
             
             
     //    }
-    }
-
+    } 
+           
 
 
 

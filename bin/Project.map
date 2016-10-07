@@ -25,7 +25,7 @@ _startupData is allocated at 0x8F5 and uses 6 Bytes
 extern struct _tagStartup {
   unsigned nofZeroOut     1
   _Range   pZeroOut       0x100     1
-  _Copy    *toCopyDownBeg 0xDC6
+  _Copy    *toCopyDownBeg 0xDD7
 } _startupData;
 
 *********************************************************************************************
@@ -34,8 +34,8 @@ Section Name                    Size  Type     From       To       Segment
 ---------------------------------------------------------------------------------------------
 .init                            149     R      0x860      0x8F4   ROM
 .startData                        14     R      0x8F5      0x902   ROM
-.text                           1219     R      0x903      0xDC5   ROM
-.copy                              2     R      0xDC6      0xDC7   ROM
+.text                           1236     R      0x903      0xDD6   ROM
+.copy                              2     R      0xDD7      0xDD8   ROM
 .abs_section_0                     1   N/I        0x0        0x0   .absSeg0
 .abs_section_1                     1   N/I        0x1        0x1   .absSeg1
 .abs_section_2                     1   N/I        0x2        0x2   .absSeg2
@@ -121,7 +121,7 @@ Section Name                    Size  Type     From       To       Segment
 .vectSeg80_vect                    2     R     0xFFFE     0xFFFF   .vectSeg80
 
 Summary of section sizes per section type:
-READ_ONLY (R):         56A (dec:     1386)
+READ_ONLY (R):         57B (dec:     1403)
 READ_WRITE (R/W):       51 (dec:       81)
 NO_INIT (N/I):          5B (dec:       91)
 
@@ -156,19 +156,19 @@ MODULE:                 -- main.c.o --
      barreDisplayPorSegmentos                   A93      61      97       1   .text       
      muestraNumero4Digitos                      AF4      7C     124       1   .text       
      main                                       B70      1C      28       1   .text       
-     ModoPlay                                   B8C      93     147       1   .text       
-     ModoConfig                                 C1F      9C     156       2   .text       
-     MuestraModoConfig                          CBB      3D      61       1   .text       
+     ModoPlay                                   B8C      A4     164       2   .text       
+     ModoConfig                                 C30      9C     156       2   .text       
+     MuestraModoConfig                          CCC      3D      61       1   .text       
 - VARIABLES:
      pepe                                       100       1       1       1   .common     
 MODULE:                 -- RTSHC08.C.o (ansii.lib) --
 - PROCEDURES:
-     _IDIVMOD                                   CF8      69     105       2   .text       
-     _IDIVU                                     D61      10      16       2   .text       
-     _IMODU                                     D71      15      21       2   .text       
-     _IDIVU_8                                   D86       C      12       1   .text       
-     _IMODU_8                                   D92      10      16       1   .text       
-     _Jump_Table_Header_Offset                  DA2      24      36       3   .text       
+     _IDIVMOD                                   D09      69     105       2   .text       
+     _IDIVU                                     D72      10      16       2   .text       
+     _IMODU                                     D82      15      21       2   .text       
+     _IDIVU_8                                   D97       C      12       1   .text       
+     _IMODU_8                                   DA3      10      16       1   .text       
+     _Jump_Table_Header_Offset                  DB3      24      36       3   .text       
 - VARIABLES:
 MODULE:                 -- MC68HC908AP32.C.o --
 - PROCEDURES:
@@ -267,7 +267,7 @@ MODULE:                 -- Start08.c.o --
 MODULE STATISTIC
   Name                                      Data   Code  Const
 ---------------------------------------------------------------------------------------------
-  main.c.o                                     1   1013      0
+  main.c.o                                     1   1030      0
   RTSHC08.C.o (ansii.lib)                      0    206      0
   MC68HC908AP32.C.o                           91      0      0
   Start08.c.o                                  0    149      0
@@ -543,15 +543,15 @@ OBJECT LIST SORTED BY ADDRESS
      barreDisplayPorSegmentos                   A93      61      97       1   .text       
      muestraNumero4Digitos                      AF4      7C     124       1   .text       
      main                                       B70      1C      28       1   .text       
-     ModoPlay                                   B8C      93     147       1   .text       
-     ModoConfig                                 C1F      9C     156       2   .text       
-     MuestraModoConfig                          CBB      3D      61       1   .text       
-     _IDIVMOD                                   CF8      69     105       2   .text       
-     _IDIVU                                     D61      10      16       2   .text       
-     _IMODU                                     D71      15      21       2   .text       
-     _IDIVU_8                                   D86       C      12       1   .text       
-     _IMODU_8                                   D92      10      16       1   .text       
-     _Jump_Table_Header_Offset                  DA2      24      36       3   .text       
+     ModoPlay                                   B8C      A4     164       2   .text       
+     ModoConfig                                 C30      9C     156       2   .text       
+     MuestraModoConfig                          CCC      3D      61       1   .text       
+     _IDIVMOD                                   D09      69     105       2   .text       
+     _IDIVU                                     D72      10      16       2   .text       
+     _IMODU                                     D82      15      21       2   .text       
+     _IDIVU_8                                   D97       C      12       1   .text       
+     _IMODU_8                                   DA3      10      16       1   .text       
+     _Jump_Table_Header_Offset                  DB3      24      36       3   .text       
      _SBSR                                     FE00       1       1       0   .abs_section_fe00
      _SRSR                                     FE01       1       1       0   .abs_section_fe01
      _SBFCR                                    FE03       1       1       0   .abs_section_fe03
@@ -596,7 +596,7 @@ RTSHC08.C.o (ansii.lib):
 *********************************************************************************************
 COPYDOWN SECTION
 ---------------------------------------------------------------------------------------------
-------- ROM-ADDRESS: 0xDC6 ---- SIZE       2 ---
+------- ROM-ADDRESS: 0xDD7 ---- SIZE       2 ---
 Filling bytes inserted
  0000
 
@@ -628,7 +628,7 @@ muestraNumero4Digitos     USES formateaNumero4Digitos apagaDisplays
                                 demoraEnms 
 main                      USES inicializaCPU inicializaPulsadores 
                                 inicializaDisplays ModoConfig pepe ModoPlay 
-ModoPlay                  USES muestraNumero4Digitos _PTD 
+ModoPlay                  USES muestraNumero4Digitos _PTD ModoPlay 
 ModoConfig                USES _PTD demoraEnms MuestraModoConfig ModoConfig 
 MuestraModoConfig         USES muestraCaracterEnDisplay muestraNumeroEnDisplay 
                                 activaDisplay demoraEnms 
@@ -740,6 +740,6 @@ STATISTIC SECTION
 
 ExeFile:
 --------
-Number of blocks to be downloaded: 5
-Total size of all blocks to be downloaded: 1386
+Number of blocks to be downloaded: 4
+Total size of all blocks to be downloaded: 1403
 
