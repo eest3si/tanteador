@@ -337,6 +337,7 @@ void muestraNumeroEnDisplay(unsigned char numero, unsigned char puntoDecimal)
     if (puntoDecimal) enciendePuntoDecimal();
 }
 
+
 void barreDisplayPorSegmentos(unsigned char numero, unsigned char puntoDecimal)
 /** muestra el numero recibido como parametro en un display, barriendolo por segmentos **/
 //  puntoDecimal = (OFF, ON)
@@ -511,4 +512,30 @@ void printLCD(unsigned char fila, unsigned char columna, char *texto)
         enviaCharLCD(texto[i]);
         i++;
     }
+}
+void modoTest(void)
+/** muestra el numero recibido en los 4 displays del Edukit **/
+{
+    unsigned char i, digitos[4];
+    digitos[0]=8;
+    digitos[1]=8;
+    digitos[2]=8;
+    digitos[3]=8;
+
+    //formateaNumero4Digitos(numero, digitos);
+
+    // barro los displays para mostrar el mumero
+    for(i = 0; i < 4; i++)
+    {
+      apagaDisplays();
+      muestraNumeroEnDisplay(digitos[i], OFF);
+      enciendePuntoDecimal();
+      // activo el punto separador de segundos
+      //if(display == 3) muestraPuntoEnDisplay;
+
+      activaDisplay(i+1);
+      // dejo encendido el display un instante para persistencia visual
+      demoraEnms(5);
+    }
+    apagaDisplays();
 }
