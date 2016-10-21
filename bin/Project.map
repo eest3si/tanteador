@@ -1,5 +1,5 @@
 
-PROGRAM "D:\Mis Cosas\Mis documentos\Tanteador\tanteador\bin\Project.abs"
+PROGRAM "C:\Users\Anselmo\Desktop\tanteador-master\tanteador\bin\Project.abs"
 
 *********************************************************************************************
 TARGET SECTION
@@ -25,7 +25,7 @@ _startupData is allocated at 0x8F5 and uses 6 Bytes
 extern struct _tagStartup {
   unsigned nofZeroOut     1
   _Range   pZeroOut       0x100     1
-  _Copy    *toCopyDownBeg 0xE30
+  _Copy    *toCopyDownBeg 0xE5C
 } _startupData;
 
 *********************************************************************************************
@@ -34,8 +34,8 @@ Section Name                    Size  Type     From       To       Segment
 ---------------------------------------------------------------------------------------------
 .init                            149     R      0x860      0x8F4   ROM
 .startData                        14     R      0x8F5      0x902   ROM
-.text                           1325     R      0x903      0xE2F   ROM
-.copy                              2     R      0xE30      0xE31   ROM
+.text                           1369     R      0x903      0xE5B   ROM
+.copy                              2     R      0xE5C      0xE5D   ROM
 .abs_section_0                     1   N/I        0x0        0x0   .absSeg0
 .abs_section_1                     1   N/I        0x1        0x1   .absSeg1
 .abs_section_2                     1   N/I        0x2        0x2   .absSeg2
@@ -121,7 +121,7 @@ Section Name                    Size  Type     From       To       Segment
 .vectSeg80_vect                    2     R     0xFFFE     0xFFFF   .vectSeg80
 
 Summary of section sizes per section type:
-READ_ONLY (R):         5D4 (dec:     1492)
+READ_ONLY (R):         600 (dec:     1536)
 READ_WRITE (R/W):       51 (dec:       81)
 NO_INIT (N/I):          5B (dec:       91)
 
@@ -144,7 +144,7 @@ MODULE:                 -- main.c.o --
      demora100us                                930       9       9       1   .text       
      demoraEnus                                 939      17      23       2   .text       
      demora1ms                                  950       C      12       1   .text       
-     demoraEnms                                 95C      17      23       5   .text       
+     demoraEnms                                 95C      17      23       6   .text       
      BCDa7seg                                   973      33      51       3   .text       
      enciendePuntoDecimal                       9A6       3       3       4   .text       
      apagaSegmentos                             9A9      11      17       2   .text       
@@ -157,19 +157,19 @@ MODULE:                 -- main.c.o --
      muestraNumero4Digitos                      AF4      7C     124       1   .text       
      modoTest                                   B70      41      65       1   .text       
      main                                       BB1      1C      28       1   .text       
-     ModoPlay                                   BCD      A4     164       2   .text       
-     ModoConfig                                 C71      B4     180       2   .text       
-     MuestraModoConfig                          D25      3D      61       1   .text       
+     ModoPlay                                   BCD      D0     208       4   .text       
+     ModoConfig                                 C9D      B4     180       2   .text       
+     MuestraModoConfig                          D51      3D      61       1   .text       
 - VARIABLES:
      pepe                                       100       1       1       1   .common     
 MODULE:                 -- RTSHC08.C.o (ansii.lib) --
 - PROCEDURES:
-     _IDIVMOD                                   D62      69     105       2   .text       
-     _IDIVU                                     DCB      10      16       2   .text       
-     _IMODU                                     DDB      15      21       2   .text       
-     _IDIVU_8                                   DF0       C      12       1   .text       
-     _IMODU_8                                   DFC      10      16       1   .text       
-     _Jump_Table_Header_Offset                  E0C      24      36       3   .text       
+     _IDIVMOD                                   D8E      69     105       2   .text       
+     _IDIVU                                     DF7      10      16       2   .text       
+     _IMODU                                     E07      15      21       2   .text       
+     _IDIVU_8                                   E1C       C      12       1   .text       
+     _IMODU_8                                   E28      10      16       1   .text       
+     _Jump_Table_Header_Offset                  E38      24      36       3   .text       
 - VARIABLES:
 MODULE:                 -- MC68HC908AP32.C.o --
 - PROCEDURES:
@@ -177,7 +177,7 @@ MODULE:                 -- MC68HC908AP32.C.o --
      _PTA                                         0       1       1      11   .abs_section_0
      _PTB                                         1       1       1       4   .abs_section_1
      _PTC                                         2       1       1       4   .abs_section_2
-     _PTD                                         3       1       1      20   .abs_section_3
+     _PTD                                         3       1       1      24   .abs_section_3
      _DDRA                                        4       1       1       1   .abs_section_4
      _DDRB                                        5       1       1       1   .abs_section_5
      _DDRC                                        6       1       1       1   .abs_section_6
@@ -268,7 +268,7 @@ MODULE:                 -- Start08.c.o --
 MODULE STATISTIC
   Name                                      Data   Code  Const
 ---------------------------------------------------------------------------------------------
-  main.c.o                                     1   1119      0
+  main.c.o                                     1   1163      0
   RTSHC08.C.o (ansii.lib)                      0    206      0
   MC68HC908AP32.C.o                           91      0      0
   Start08.c.o                                  0    149      0
@@ -456,7 +456,7 @@ OBJECT LIST SORTED BY ADDRESS
      _PTA                                         0       1       1      11   .abs_section_0
      _PTB                                         1       1       1       4   .abs_section_1
      _PTC                                         2       1       1       4   .abs_section_2
-     _PTD                                         3       1       1      20   .abs_section_3
+     _PTD                                         3       1       1      24   .abs_section_3
      _DDRA                                        4       1       1       1   .abs_section_4
      _DDRB                                        5       1       1       1   .abs_section_5
      _DDRC                                        6       1       1       1   .abs_section_6
@@ -532,7 +532,7 @@ OBJECT LIST SORTED BY ADDRESS
      demora100us                                930       9       9       1   .text       
      demoraEnus                                 939      17      23       2   .text       
      demora1ms                                  950       C      12       1   .text       
-     demoraEnms                                 95C      17      23       5   .text       
+     demoraEnms                                 95C      17      23       6   .text       
      BCDa7seg                                   973      33      51       3   .text       
      enciendePuntoDecimal                       9A6       3       3       4   .text       
      apagaSegmentos                             9A9      11      17       2   .text       
@@ -545,15 +545,15 @@ OBJECT LIST SORTED BY ADDRESS
      muestraNumero4Digitos                      AF4      7C     124       1   .text       
      modoTest                                   B70      41      65       1   .text       
      main                                       BB1      1C      28       1   .text       
-     ModoPlay                                   BCD      A4     164       2   .text       
-     ModoConfig                                 C71      B4     180       2   .text       
-     MuestraModoConfig                          D25      3D      61       1   .text       
-     _IDIVMOD                                   D62      69     105       2   .text       
-     _IDIVU                                     DCB      10      16       2   .text       
-     _IMODU                                     DDB      15      21       2   .text       
-     _IDIVU_8                                   DF0       C      12       1   .text       
-     _IMODU_8                                   DFC      10      16       1   .text       
-     _Jump_Table_Header_Offset                  E0C      24      36       3   .text       
+     ModoPlay                                   BCD      D0     208       4   .text       
+     ModoConfig                                 C9D      B4     180       2   .text       
+     MuestraModoConfig                          D51      3D      61       1   .text       
+     _IDIVMOD                                   D8E      69     105       2   .text       
+     _IDIVU                                     DF7      10      16       2   .text       
+     _IMODU                                     E07      15      21       2   .text       
+     _IDIVU_8                                   E1C       C      12       1   .text       
+     _IMODU_8                                   E28      10      16       1   .text       
+     _Jump_Table_Header_Offset                  E38      24      36       3   .text       
      _SBSR                                     FE00       1       1       0   .abs_section_fe00
      _SRSR                                     FE01       1       1       0   .abs_section_fe01
      _SBFCR                                    FE03       1       1       0   .abs_section_fe03
@@ -598,7 +598,7 @@ RTSHC08.C.o (ansii.lib):
 *********************************************************************************************
 COPYDOWN SECTION
 ---------------------------------------------------------------------------------------------
-------- ROM-ADDRESS: 0xE30 ---- SIZE       2 ---
+------- ROM-ADDRESS: 0xE5C ---- SIZE       2 ---
 Filling bytes inserted
  0000
 
@@ -632,7 +632,7 @@ modoTest                  USES apagaDisplays muestraNumeroEnDisplay
                                 enciendePuntoDecimal activaDisplay demoraEnms 
 main                      USES inicializaCPU inicializaPulsadores 
                                 inicializaDisplays ModoConfig pepe ModoPlay 
-ModoPlay                  USES muestraNumero4Digitos _PTD ModoPlay 
+ModoPlay                  USES muestraNumero4Digitos _PTD demoraEnms ModoPlay 
 ModoConfig                USES _PTD modoTest demoraEnms MuestraModoConfig 
                                 ModoConfig 
 MuestraModoConfig         USES muestraCaracterEnDisplay muestraNumeroEnDisplay 
@@ -698,51 +698,53 @@ DEPENDENCY TREE
  |  +- ModoPlay            
  |     | 
  |     +- muestraNumero4Digitos
- |        | 
- |        +- formateaNumero4Digitos
- |        |  | 
- |        |  +- _IDIVU              
- |        |  |  | 
- |        |  |  +- _IDIVMOD            
- |        |  |       
- |        |  +- _IMODU              
- |        |  |  | 
- |        |  |  +- _IDIVMOD             (see above)
- |        |  |     
- |        |  +- _IMODU_8            
- |        |  |  | 
- |        |  |  +- _IMODU               (see above)
- |        |  |     
- |        |  +- _IDIVU_8            
- |        |     | 
- |        |     +- _IDIVU               (see above)
- |        |        
- |        +- apagaDisplays        (see above)
- |        |  
- |        +- activaDisplay        (see above)
- |        |  
- |        +- barreDisplayPorSegmentos
- |        |  | 
- |        |  +- BCDa7seg             (see above)
- |        |  |  
- |        |  +- apagaSegmentos      
- |        |  |    
- |        |  +- _Jump_Table_Header_Offset (see above)
- |        |  |  
- |        |  +- demoraEnus          
- |        |     | 
- |        |     +- demora1us           
- |        |          
- |        +- enciendePuntoDecimal (see above)
- |        |  
- |        +- demoraEnus           (see above)
- |        |  
- |        +- apagaSegmentos       (see above)
- |        |  
- |        +- muestraNumeroEnDisplay (see above)
- |        |  
- |        +- demoraEnms           (see above)
- |           
+ |     |  | 
+ |     |  +- formateaNumero4Digitos
+ |     |  |  | 
+ |     |  |  +- _IDIVU              
+ |     |  |  |  | 
+ |     |  |  |  +- _IDIVMOD            
+ |     |  |  |       
+ |     |  |  +- _IMODU              
+ |     |  |  |  | 
+ |     |  |  |  +- _IDIVMOD             (see above)
+ |     |  |  |     
+ |     |  |  +- _IMODU_8            
+ |     |  |  |  | 
+ |     |  |  |  +- _IMODU               (see above)
+ |     |  |  |     
+ |     |  |  +- _IDIVU_8            
+ |     |  |     | 
+ |     |  |     +- _IDIVU               (see above)
+ |     |  |        
+ |     |  +- apagaDisplays        (see above)
+ |     |  |  
+ |     |  +- activaDisplay        (see above)
+ |     |  |  
+ |     |  +- barreDisplayPorSegmentos
+ |     |  |  | 
+ |     |  |  +- BCDa7seg             (see above)
+ |     |  |  |  
+ |     |  |  +- apagaSegmentos      
+ |     |  |  |    
+ |     |  |  +- _Jump_Table_Header_Offset (see above)
+ |     |  |  |  
+ |     |  |  +- demoraEnus          
+ |     |  |     | 
+ |     |  |     +- demora1us           
+ |     |  |          
+ |     |  +- enciendePuntoDecimal (see above)
+ |     |  |  
+ |     |  +- demoraEnus           (see above)
+ |     |  |  
+ |     |  +- apagaSegmentos       (see above)
+ |     |  |  
+ |     |  +- muestraNumeroEnDisplay (see above)
+ |     |  |  
+ |     |  +- demoraEnms           (see above)
+ |     |     
+ |     +- demoraEnms           (see above)
+ |        
  +- _Startup            
     | 
     +- Init                
@@ -758,5 +760,5 @@ STATISTIC SECTION
 ExeFile:
 --------
 Number of blocks to be downloaded: 5
-Total size of all blocks to be downloaded: 1492
+Total size of all blocks to be downloaded: 1536
 

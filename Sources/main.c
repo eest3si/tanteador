@@ -39,6 +39,33 @@ void ModoPlay(unsigned char modoConfig){
     while(1){
         numero=player1*100+player2;               
         muestraNumero4Digitos(numero,0,BARRER_POR_DISPLAY);
+        
+                
+   //ModoConfig
+   
+   if(SW3 == 0 && SW1 == 0) { 
+   demoraEnms(500);
+   break;
+   }
+    
+    
+   //RESET SCORE 
+    
+   if(!antirrebote){
+   if(SW4 == 0 && SW2 == 0){
+      player2=0;
+      player1=0;
+      antirrebote=1;
+      i=0;
+    }
+    } else {
+      
+      i++;
+      if(i==150) antirrebote=0;
+    }
+        
+        
+        
                            
         if(!antirrebote){
             if(SW1==0){
@@ -98,6 +125,8 @@ void ModoPlay(unsigned char modoConfig){
          if (player1==modoConfig) break;
     
          if (player2==modoConfig) break;
+ 
+         
      }
 }
 
