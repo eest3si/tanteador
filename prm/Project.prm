@@ -29,3 +29,7 @@ END
 STACKSIZE 0x50
 
 VECTOR 0 _Startup /* Reset vector: this is the default entry point for an application. */
+VECTOR ADDRESS 0xFFE0 irqPulsadores // KBI
+VECTOR ADDRESS 0xFFF0 irqTIM1OF     // TIM1 Overflow
+VECTOR ADDRESS 0xFFF4 irqTIM1CH0    // TIM1 CH0
+VECTOR ADDRESS 0xFFEA irqTIM2OF     // TIM2 Overflow Vector (High)
