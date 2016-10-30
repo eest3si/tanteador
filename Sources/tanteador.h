@@ -1,10 +1,10 @@
 /** ###################################################################
-**     LIBRERIA DE FUNCIONES PARA LA PLACA PLUGIN AP_32 DEL EDUKIT
+**    LIBRERIA DE FUNCIONES PARA EL PROYECTO TANTEADOR DE PING-PONG
 **
-**     Archivo    : edukit.h
-**     Micro      : MC68HC908AP32CFB (44 pines)
-**     Version    : 1.3
-**     Fecha      : 20161023
+**     Archivo    : tanteador.h
+**     Micro      : MC68HC908AP8CFB (44 pines)
+**     Version    : 1.5
+**     Fecha      : 20161030
 **     Autor      : Ing. Juan Carlos Torres
 **
 ** ###################################################################*/
@@ -13,17 +13,19 @@
 
 /** ---------------- Seccion defines ------------------ **/
 
+/* Macros booleanos */
+#define TRUE   1
+#define FALSE  0
+#define ON     1
+#define OFF    0
+#define INPUT  0
+#define OUTPUT 1
+
 /* Macros para los leds de proposito general */
 //TODO: definir GUION y DOS_PUNTOS
 #define LED1            PTA_PTA1  // activo bajo
 #define LED2            PTA_PTA2  // activo alto
 #define LED10           PTB_PTB0  // activo bajo
-#define EnciendeLED1    LED1 = 0; 
-#define ApagaLED1       LED1 = 1;
-#define EnciendeLED2    LED2 = 1;
-#define ApagaLED2       LED2 = 0;
-#define EnciendeLED10   LED10 = 0;
-#define ApagaLED10      LED10 = 1;
 
 /* Macros para los displays */
 #define SEG_A                 PTD_PTD0
@@ -60,10 +62,7 @@
 #define SW2 PTD_PTD5
 #define SW3 PTD_PTD6
 #define SW4 PTD_PTD7
-#define ANTIRREBOTE 10
-
-/* Macros modulo SPI */
-#define SPI_SS PTC_PTC4
+#define ANTIRREBOTE 3  // N x 100 ms de antirrebote
 
 /* Macros modulo ADC */
 #define ArrancarConversionAD  ADSCR = 0x03; // conversion unica, ADCH3/PTA3
@@ -72,29 +71,38 @@
 #define KELVIN  0
 
 /* Macros sensores */
-#define SENSOR_IR   PTB_PTB4
-#define SENSOR_TEMP PTA_PTA3
+#define SENSOR_IR         PTB_PTB4
+#define SENSOR_TEMP       PTA_PTA3
+#define HabilitarSensorIR DDRB_DDRB4 = INPUT;
 
-/* Macros booleanos */
-#define TRUE   1
-#define FALSE  0
-#define ON     1
-#define OFF    0
-#define INPUT  0
-#define OUTPUT 1
+// Macros para cambiar un bit de una variable (o registro)
+#define bitset(var,bit) ((var) |= 1 << (bit))
+#define bitclr(var,bit) ((var) &= ~(1 << (bit)))
+
+/* Macros para la trama SIRC */
+#define UNO_LOGICO  7000    // El "1" (1.2ms) se toma a 1.4ms para minimizar error (1.4ms = 7000 en el contador)
+#define CERO_LOGICO 4000    // El "0" (0.6ms) se toma a 0.8ms para minimizar error (0.8ms = 4000 en el contador)
 
 /** ---------------------- Variables globales --------------------------- **/
-const char KBI_MASK[4] = { 16, 32, 64, 128 };
-unsigned char Antirrebote[4];
-unsigned char SW[4];
-unsigned char P1mas = 0;
-unsigned char P1menos = 0;
-unsigned char P2mas = 0;
-unsigned char P2menos = 0;
-unsigned char ModoTest = 0;
+const char KBI_MASK[4] = { 16, 32, 64, 128 }; // mascara de bits para KBIER
+unsigned char Antirrebote[4];       // contador antirrebote para los pulsadores
+unsigned char SW[4];                // almacena el valor de cada pulsador
+unsigned char P1mas = 0;            // P1+
+unsigned char P1menos = 0;          // P1-
+unsigned char P2mas = 0;            // P2+
+unsigned char P2menos = 0;          // P2-
+unsigned char ModoTest = 0; 
 unsigned char ModoConfig = 0;
 unsigned char ReiniciarPartida = 0;
-unsigned char contador = 0;
+unsigned char Timer3Seg = 0;
+unsigned char ContadorTimer3Seg = 0;
+unsigned char ContadorParpadeo = 0;
+unsigned char TickParpadeo = 0;     // marca el parpadeo para los displays
+unsigned char ComandoIR = 129;      // Comando IR recibido (este valor inicial es para evitar lecturas espureas)
+unsigned int  AnchoDePulso;         // lapso de tiempo capturado por TIM1
+unsigned char Comando = 0;          // Primeros 7 bits de la trama SIRC
+unsigned char BitTrama = 0;         // Contador de bits recibidos
+unsigned char i;                    // para los bucles for() de las ISR
 
 /** ---------------- Seccion inicializacion de modulos ------------------ **/
 
@@ -126,7 +134,7 @@ void inicializaPLL(void)
   PMDS_RDS0 = 1;      // R=1 (default)
   PMRS = 0x27;        // L=27H
   PCTL_PLLON = ON;    // PLL:ON
-  PBWC_AUTO = ON;     // Enganche automático
+  PBWC_AUTO = ON;     // Enganche automatico
   while(!PBWC_LOCK);  // esperar a LOCK = 1
   PCTL_BCS = 1;       // cambio a frecuencia del PLL
 }
@@ -212,25 +220,6 @@ void inicializaKBI(void)
   KBSCR = 0x04;
 }
 
-void inicializaSPI(void)
-/** Inicializa el modulo SPI **/
-{
-  char dummy;  // para lectura trivial
-
-  /* SPCR: SPRIE=0,??=0,SPMSTR=0,CPOL=0,CPHA=0,SPWOM=0,SPE=0,SPTIE=0 */
-  SPCR = 0x00;      /* Disable the SPI module */
-  dummy = SPSCR;    /* Dummy read of the SPSCR registr to clear flags */
-  dummy = SPDR;     /* Dummy read of the SPDR registr to clear flags */
-
-  /* SPSCR: SPRF=0,ERRIE=0,OVRF=0,MODF=0,SPTE=0,MODFEN=0,SPR1=1,SPR0=1 */
-  SPSCR = 0x03;
-
-  /* SPCR: SPRIE=0,??=0,SPMSTR=1,CPOL=0,CPHA=1,SPWOM=0,SPE=0,SPTIE=0 */
-  SPCR = 0x28;
-
-  //SPCR_SPE = 1;
-}
-
 void configuraADC(void)
 /** Configura el modulo ADC para las practicas de la guia */
 {
@@ -244,14 +233,25 @@ void configuraADC(void)
   ADICLK = 0x54;  // ADIV1=1, ADICLK=1, MODE0=1
 }
 
-void inicializaTIM2(void)
-/** para la base de tiempo de 20ms **/
-// fBus=5Mhz (T=200ns); PS = 8; MOD = 12500 
-// T * MD * PS = 20ms
+void inicializaTIM1(void)
+/** para el control remoto IR **/
 {
-  T2SC=0x53;    // PS2=0, PS1=1, PS0=1 (fBus/8); se habilita interrupción por overflow
-  T2MODH=0x30;  // Módulo del contador en 12500  
-  T2MODL=0xD4;
+  T1SC = 0x20;        // Timer detenido y configurado a fBus (1/f = 200 ns)
+  T1SC0 = 0x4C;       // Interrupcion habilitada, modo Input Capture en ambos flancos (CH0)
+  T1MODH = 0xFF;      // Lmite de conteo maximo (default after reset)
+  T1MODL = 0xFF;
+  T1SC_TRST = 1;      // Prescaler and TIM counter cleared 
+  T1SC_TSTOP = 0;     // Arranca el timer
+}
+
+void inicializaTIM2(void)
+/** para la base de tiempo de 100 ms **/
+/** fBus=5Mhz (T=200ns); PS = 32; MOD = 15625 **/
+/** T x MOD x PS = 100 ms **/
+{
+  T2SC = 0x55;        // Timer configurado a fBus/32. Se habilita interrupcion por overflow
+  T2MODH = 0x3D;      // Modulo del contador en 15625 = 0x3d09  
+  T2MODL = 0x09;
 }
 
 /** ---------------- Seccion demoras ------------------ **/
@@ -285,7 +285,7 @@ void demora100us()
 void demoraEnus(unsigned int n)
 /** genera una demora aproximada de n microsegundos **/
 {
-    while(n){
+    while (n) {
         demora1us();
         n--;
     }
@@ -296,13 +296,13 @@ void demora1ms()
 {
     unsigned char i;
 
-    for(i=1; i<=10; i++) demora100us();
+    for (i = 0; i < 10; i++) demora100us();
 }
 
 void demoraEnms(unsigned int n)
 /** genera una demora aproximada de n milisegundos **/
 {
-    while(n){
+    while (n) {
         demora1ms();
         n--;
     }
@@ -312,9 +312,9 @@ void demoraEns(unsigned int n)
 /** genera una demora aproximada de n segundos **/
 {
     unsigned int i;
-    n*=1000;   // convierto n a milisegundos
+    n *= 1000;   // convierto n a milisegundos
 
-    for(i=1; i<=n; i++) demora1ms();
+    for (i = 0; i < n; i++) demora1ms();
 }
 
 /** ----------- Seccion de funciones para display 7 segmentos --------- **/
@@ -412,7 +412,8 @@ void apagaDisplays(void)
 }
 
 void activaDisplay(unsigned char display)
-/** habilita el catodo del display indicado (display: 1..4) **/
+/** habilita el catodo del display indicado **/
+/** display= (1, 2, 3, 4) **/
 {
   apagaDisplays();
 
@@ -458,7 +459,7 @@ void formateaNumero4Digitos(unsigned int numero, unsigned char digitos[])
 void muestraCaracterEnDisplay(unsigned char valor)
 /** usada para mostrar caracteres personalizados **/
 {    
-    // escribo sólo en los pines conectados al display
+    // escribo solo en los pines conectados al display
     PTD_PTD0 = valor;
     PTD_PTD1 = valor>>=1;
     PTD_PTD2 = valor>>=1;
@@ -490,32 +491,35 @@ void muestraNumeroEnDisplay(unsigned char numero, unsigned char puntoDecimal)
 
 void muestraNumero2Digitos(unsigned char numero, unsigned char posicionPuntoDecimal, unsigned char displays, unsigned char parpadear)
 /** muestra el nro recibido en 2 displays del Edukit **/
-// posicionPuntoDecimal = (0 -apagado-, 1, 2)
-// displays = (DISPLAYS_1_2, DISPLAYS_3_4)
-// parpadear = (OFF, ON)
+/** posicionPuntoDecimal = (0 -apagado-, 1, 2) **/
+/** displays = (DISPLAYS_1_2, DISPLAYS_3_4) **/
+/** parpadear = (OFF, ON) **/
 {
-  if(!parpadear){
+  apagaDisplays();
+
+  if (!parpadear | TickParpadeo) {
     unsigned char i, inicio, fin, digitos[2];
 
     formateaNumero2Digitos(numero, digitos);
-    apagaDisplays();
 
-    if(displays == 12){
+    if (displays == 12) {
       inicio = 1;
       fin = 2;
     }
 
-    if(displays == 34){
+    if (displays == 34) {
       inicio = 3;
       fin = 4;
     }
     
-    for(i = inicio; i <= fin; i++){
+    // barrida de displays
+    for (i = inicio; i <= fin; i++) {
         muestraNumeroEnDisplay(digitos[i-1], OFF);
         activaDisplay(i);
-        if(posicionPuntoDecimal == i) EnciendePuntoDecimal;
+        if (posicionPuntoDecimal == i) EnciendePuntoDecimal;
         demoraEnms(DEMORA_DISPLAY_MS);
     }
+    apagaDisplays();
   }
 }
 
@@ -523,132 +527,27 @@ void muestraNumero4Digitos(unsigned int numero, unsigned char posicionPuntoDecim
 /** muestra el nro recibido en los 4 displays del Edukit **/
 // posicionPuntoDecimal = (0 -apagado-, 1, 2, 3, 4)
 // parpadear = (OFF, ON)
+
 {
-  if(!parpadear){
+  apagaDisplays();
+
+  if (!parpadear | TickParpadeo) {
     unsigned char i, digitos[4];
 
     formateaNumero4Digitos(numero, digitos);
-    apagaDisplays();
 
-    for(i = 1; i <= 4; i++){
+    for (i = 1; i <= 4; i++) {
         muestraNumeroEnDisplay(digitos[i-1], OFF);
         activaDisplay(i);
-        if(posicionPuntoDecimal == i) EnciendePuntoDecimal;
+        if (posicionPuntoDecimal == i) EnciendePuntoDecimal;
         demoraEnms(DEMORA_DISPLAY_MS);
     }
+    apagaDisplays();
   }
 }
 
-/** ----------- Seccion de funciones para display LCD 16x2 --------- **/
-
-void datoLCD(unsigned char dato)
-/** descompone el byte (dato) y lo pone en el bus de datos del LCD **/
-{
-    // escribo sólo en los pines conectados al LCD
-    PTD_PTD0 = dato;
-    PTD_PTD1 = dato>>=1;
-    PTD_PTD2 = dato>>=1;
-    PTD_PTD3 = dato>>=1; 
-    PTA_PTA4 = dato>>=1;
-    PTA_PTA5 = dato>>=1;
-    PTA_PTA6 = dato>>=1;
-    PTA_PTA7 = dato>>1;
-}
-
-void comandoLCD(unsigned char comando)
-/** descompone el byte (comando) y lo pone en el bus de datos del LCD **/
-{
-    // vuelco el comando en el bus de datos
-    datoLCD(comando);
-
-    // operacion de escritura del comando
-    LCD_RW = 0; // Write = 0
-    LCD_RS = 0; // Register Select = 0 (comando)
-
-    // provocamos un pulso en la linea E para que el comando sea leido por el LCD
-    LCD_E = 1;
-    demoraEnms(2);
-    LCD_E = 0;
-    demoraEnms(2);
-}
-
-void inicializaLCD(void)
-/** Comandos de inicializacion del LCD 16x2 del Edukit **/
-{
-    demoraEnms(20);   // demora para el 'booteo' del LCD
-
-    // comandos de configuracion
-    comandoLCD(0x02);   // CURSOR HOME          (setea el cursor al comienzo de linea 1)
-    comandoLCD(0x38);   // FUNCTION SET         (modo 8 bits, 2 lineas, formato 5x7 dots)    
-    comandoLCD(0x0c);   // DISPLAY & CURSOR     (display ON, cursor underline OFF, cursor blink OFF)
-    comandoLCD(0x06);   // CHARACTER ENTRY MODE (increment, display shift OFF)
-    comandoLCD(0x01);   // CLEAR DISPLAY
-}
-
-void muestraCaracterEnLCD(unsigned char caracter)
-/** envia el caracter para mostrarlo en el LCD **/
-{
-    // pongo el caracter en el bus de datos del LCD
-    datoLCD(caracter);
-    
-    // operacion de escritura del caracter
-    LCD_RW = 0;   // write = 0
-    LCD_RS = 1;   // Register Select = 1 (dato)
-
-    // provocamos un flanco en E para que el comando sea leido por el LCD
-    LCD_E = 1;
-    demoraEnms(2);
-    LCD_E = 0;
-    demoraEnms(2);
-}
-
-void posicionaCursorLCD(unsigned char fila, unsigned char columna)
-/** posiciona el cursor en la coordenada indicada **/
-{
-    unsigned char comando;
-
-    switch (fila)
-    {
-        case 0:
-            comando = 0x80; // SET DISPLAY ADDRESS
-            break;
-        case 1:
-            comando = 0xc0; // SET DISPLAY ADDRESS 
-            break;
-    }
-    // desplazo a la columna indicada
-    comando += columna;
-    // envio el comando al LCD
-    comandoLCD(comando);
-}
-
-void muestraTextoEnLCD(unsigned char fila, unsigned char columna, char *texto)
-/** muestra el texto en la posicion especificada **/
-/** fila: 0, 1; columna: 0..15 **/
-{
-    unsigned char i=0;
-    posicionaCursorLCD(fila, columna);
-
-    // recorro la cadena de texto para mostrarla
-    while(texto[i] != 0){
-        muestraCaracterEnLCD(texto[i]);
-        i++;
-    }
-}
-
-unsigned char enviaSPI(unsigned char unByte)
-/** El byte recibido se envia por SPI, producto de la trasaccion se recibe otro byte que la funcion retorna **/
-{
-    SPI_SS = 0;
-    SPDR = unByte;
-    // espero al buffer de recepcion
-    while(!SPSCR_SPRF);
-
-    return SPDR;
-}
-
 unsigned int lecturaAD(void)
-/** Devuelve el valor de la conversion a 10 bits **/
+/** Devuelve el valor de la conversion AD con 10 bits de resolucion **/
 {
     unsigned int valor = 0;
 
@@ -676,10 +575,10 @@ unsigned int convierteEnmV(unsigned int valor)
 
 unsigned int convierteEnTemp(unsigned int valor, unsigned char escala)
 /** Devuelve el valor en la escala de temperatura seleccionada **/
-// escala = (CELSIUS, KELVIN)
+/** escala = (CELSIUS, KELVIN) **/
 {
     // con precision en decimas de grado
-    if(escala==CELSIUS)
+    if (escala==CELSIUS)
       return (convierteEnmV(valor) - 2730);
     else
       return convierteEnmV(valor);
@@ -695,7 +594,7 @@ void modoTest(void)
     digitos[3]=8;
 
     // barro los displays para mostrar el mumero
-    for(i = 0; i < 4; i++)
+    for (i = 0; i < 4; i++)
     {
       apagaDisplays();
       muestraNumeroEnDisplay(digitos[i], OFF);
@@ -708,34 +607,43 @@ void modoTest(void)
 }
 
 /** ----------- Seccion de funciones de atencion de interrupcion (ISR) --------- **/
+
 void interrupt irqTIM2OF(void)
-/** interrupcion periodica cada 20ms para antirrebote **/
+/** interrupcion periodica cada 100ms **/
 {
-  char i;
- 
-   for (i = 0; i < 4; i++) {                   // Test all keys
+   // para el antirrebote SW1..SW4
+   for (i = 0; i < 4; i++) {                   // Recorro los 4 pulsadores
       if (Antirrebote[i]) {
           Antirrebote[i]--;
-          if (Antirrebote[i] == 0)             // Debounce timeout occurred
+          if (Antirrebote[i] == 0)             // timeout antirrebote
             KBIER |= KBI_MASK[i];              // Habilito IRQ para ese pulsador
       }
     } 
 
-  if(contador==50){
-    LED10 = ~LED10;
-    contador = 0;
+  // para el timer de 3 segundos
+  if (Timer3Seg) {
+    if (ContadorTimer3Seg == 30) {
+      ContadorTimer3Seg = 0;
+      Timer3Seg = OFF;
+    }
+    else
+      ContadorTimer3Seg++;
+  }
+
+  // para el parpadeo de los displays c/ 500 mseg
+  if (ContadorParpadeo == 5) {
+    ContadorParpadeo = 0;
+    TickParpadeo = ~TickParpadeo;
   }
   else 
-    contador++;
+    ContadorParpadeo++;
 
-  T2SC_TOF=0;
+  T2SC_TOF=0;   // interrupcion atendida
 }
 
 void interrupt irqPulsadores(void)
 /** Contiene la logica de los pulsadores (ver Descripcion Funcional para detalles) **/
-{
-   char i;
-   
+{   
    // Guardo el estado actual de los pulsadores
    SW[0] = SW1;  // P2- (PTD4)
    SW[1] = SW2;  // P2+ (PTD5)
@@ -748,8 +656,10 @@ void interrupt irqPulsadores(void)
           Antirrebote[i] = ANTIRREBOTE; // y le asigno un antirrebote
           
           // Modo Test (P2+ y P2-)
-          if (!KBIER_KBIE5 & !KBIER_KBIE4)
-            ModoTest = 1;
+          if (!KBIER_KBIE5 & !KBIER_KBIE4) {
+            ModoTest = 1;   // seteo la variable global
+            Timer3Seg = ON; // "arranco" el timer de 3 segundos
+          }   
 
           // Reiniciar partida (P1+ y P2+)
           if (!KBIER_KBIE7 & !KBIER_KBIE5) 
@@ -777,53 +687,46 @@ void interrupt irqPulsadores(void)
        }
     }
 
-  KBSCR_ACK = 1;
+  KBSCR_ACK = 1;  // interrupcion atendida
 }
 
 void interrupt irqTIM1OF(void)
 /**  Reestablece el timer por overflow **/
 {
-  T1SC_TOF=0;   // Limpio el TIM Overflow Flag Bit 
-  T1SC_TRST=1;  // Limpio el Prescaler y el contador del TIM
+  T1SC_TOF = 0;   // Limpio el TIM Overflow Flag Bit 
+  T1SC_TRST = 1;  // Limpio el Prescaler y el contador del TIM
 }
 
 void interrupt irqTIM1CH0(void)
-/** ISR del TIM1 por el PTB4 en flancos de subida **/
+/** Manejo del control remoto IR **/
 {
-  /*
-  if(SENSOR_IR==0){        // Caso Flanco de bajada (el receptor invierte la señal)
-    T1SC_TRST=1;          // Limpio el Prescaler y el contador del TIM
-  } else{                 // Caso flanco de subida
-    Tiempo=T1CH0;         // Guarda el valor del evento.
-    if(Tiempo>UNO_LOGICO) // Lo considero como pulso de inicio.
-    {       
-      i=0;                // Prepara i para recibir los 7 bits.
-      Dato1=0;
-      Dato2=0;
-    }
-    if(Tiempo>CERO_LOGICO) // Lo considero como "1".
-    {      
-      if(i<8){
-        bitset(Dato1,i);
-        i++;
+  if (SENSOR_IR == 0)          // Flanco de bajada (recordar que el receptor invierte la señal!)
+      T1SC_TRST = 1;          // limpio el contador para medir el ancho del pulso
+  else
+  {                                     // Flanco de subida
+      AnchoDePulso = T1CH0;             // Guarda el valor medido.
+      if (AnchoDePulso > UNO_LOGICO)     // Pulso de inicio (nueva trama) 
+      {       
+          BitTrama = 0;                 // limpio las variables para recibir los datos
+          Comando = 0;
       }
-      if(7<i<11){
-        bitset(Dato2,i);
+      if (AnchoDePulso > CERO_LOGICO)    // Recibi un "1".
+      {      
+          if (BitTrama < 8) {
+            bitset(Comando, BitTrama);  // seteo el bit correspondiente
+            BitTrama++;
+          }
       }
-    } 
-    else{               // Lo considero como "0".
-      if(i<8){
-        bitclr(Dato1,i);
-        i++;
+      else
+      {                 // Recibi un "0".
+          if (BitTrama < 8) {
+            bitclr(Comando, BitTrama);  // limpio el bit correspondiente
+            BitTrama++;
+          }
       }
-      if(7<i<11){
-        bitclr(Dato2,i);
-      }
-    }
   }
-  if(i>=7){
-    Dato=Dato1;
-  }
-  */ 
-  T1SC0_CH0F=0;
+
+  if (BitTrama >= 7) ComandoIR = Comando;  // si recibi al menos 7 bits guardo el comando
+  
+  T1SC0_CH0F=0;   // interrupcion atendida
 }

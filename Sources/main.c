@@ -8,19 +8,19 @@ void muestraModoConfig(unsigned char);
 unsigned char modoConfig(void);
 void modoPlay(unsigned char);
 
-/*-------------Variables globales-------------*/
-
-
-
 /**-------------Main-------------**/
 
 void main(void){
-    unsigned char i=0,antirrebote=0;
     unsigned char pepe;                              
     
     configuraCPU();
     habilitaPulsadores();
+    inicializaKBI();
     habilitaLCDyDisplays();
+    inicializaTIM1();       // Input-capture para el control remoto IR
+    inicializaTIM2();       // base de tiempo de 100 ms
+    configuraADC();         // para el sensor de temperatura (ADCH3/PTA3)
+    HabilitarSensorIR;      // conectado a TIM1CH0/PTB4 
     EnableInterrupts;
   
     for(;;){
@@ -36,132 +36,75 @@ void modoPlay(unsigned char modoConfig){
     char player1=0;
     char player2=0;
     unsigned int numero=0;
-    unsigned char i=0,antirrebote=0;
   
     while(1){
         numero=player1*100+player2;               
         muestraNumero4Digitos(numero, OFF, OFF);
                 
-   //ModoConfig
-   
-   if(SW3 == 0 && SW1 == 0) { 
-   demoraEnms(500);
-   break;
-   }
-    
-    
-   //RESET SCORE 
-    
-   if(!antirrebote){
-   if(SW4 == 0 && SW2 == 0){
-      player2=0;
-      player1=0;
-      antirrebote=1;
-      i=0;
+		//ModoConfig
+	   
+	   	if(ModoConfig) {
+	   		ModoConfig = OFF;	// limpio flag
+	   		break;
+	   	}
+	   
+	    //RESET SCORE
+	  	if(ReiniciarPartida) {
+	    	ReiniciarPartida = OFF;	// limpio flag
+	    	player2=0;
+	    	player1=0;
+	    }
+	 
+		if(P1mas) {
+			P1mas = OFF;	// limpio flag
+			player1++;
+		}
+
+	    if(P1menos) {
+	    	P1menos = OFF;	// limpio flag
+	    	if(player1>0) player1--;
+	    }
+
+	    if(P2mas) {
+	    	P2mas = OFF;	// limpio flag
+	    	player2++;
+	    }
+
+	    if(P2menos) {
+	    	P2menos = OFF;	// limpio flag
+	    	if(player2>0) player2--;
+	    }
+
+	    if (player1==modoConfig) break;
+
+	    if (player2==modoConfig) break; 
     }
-    } else {
-      
-      i++;
-      if(i==150) antirrebote=0;
-    }
-        
-        
-        
-                           
-        if(!antirrebote){
-            if(SW1==0){
-            player1++;
-            antirrebote=1;
-            i=0;
-            }
-        } 
-        else{
-            i++;
-            if(i==50) antirrebote=0;
-        }
-   
-        if(!antirrebote){
-            if(SW2==0){
-                if (player1==0) i++;
-                else{
-                    player1--;
-                    antirrebote=1;
-                    i=0;
-                }
-            }
-         }
-         else{
-             i++;
-             if(i==50) antirrebote=0;
-         }
-   
-         if(!antirrebote){
-             if(SW3==0){
-                 player2++;
-                 antirrebote=1;
-                 i=0;   
-             }     
-         }
-         else{
-             i++;
-             if(i==50) antirrebote=0;
-         }
-     
-         if(!antirrebote){
-             if(SW4==0){
-                 if (player2==0) i++;
-                 else{
-                     player2--;
-                     antirrebote=1;
-                     i=0;
-                 }
-      
-             }    
-         }
-         else{
-             i++;
-             if(i==50) antirrebote=0;
-         }
-      
-         if (player1==modoConfig) break;
-    
-         if (player2==modoConfig) break;
- 
-         
-     }
 }
 
 
 unsigned char modoConfig(void){
 
-    unsigned char antirrebote=0, i=0, retorno=0;
     unsigned char numero=0, pulso=0;
 
     while(1){
-        if(!antirrebote){
-            if(SW1==0 && SW2==0){           //Modo Test
-                while(SW1==0 && SW2==0){       
-                    modoTest();
-                }
-                antirrebote=1;
-                i=0;
-            } 
-      
-            if(SW4==0){           //P1+
-                pulso++;   
-                demoraEnms(50);
-                antirrebote=1;
-                i=0;
-            }
-        } 
-        else{    
-            i++;
-            if(i==50) antirrebote=0;
+    	//Modo Test
+        if(ModoTest) {
+        	ModoTest = OFF;	// limpio flag
+        	while(Timer3Seg) modoTest();
         }
+      
+    	// P1+
+        if(P1mas) {
+        	P1mas = OFF;	// limpio flag
+        	pulso++;
+        }   
   
-        if(pulso==4) pulso=0;    //P1 limite
+        //P1 limite
+        if(pulso==4) pulso=0;
   
-        if(SW3==0){              //P1-  Retorno del modo de juego
+        
+        if(P1menos) {              //P1-  Retorno del modo de juego
+            P1menos = OFF;	// limpio flag
             pulso=0;
             demoraEnms(150);
             return (numero);

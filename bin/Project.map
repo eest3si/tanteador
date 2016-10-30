@@ -24,19 +24,20 @@ Entry point: 0x8EC (_Startup)
 _startupData is allocated at 0x8F5 and uses 6 Bytes
 extern struct _tagStartup {
   unsigned nofZeroOut     1
-  _Range   pZeroOut       0x100     16
-  _Copy    *toCopyDownBeg 0xF19
+  _Range   pZeroOut       0x100     25
+  _Copy    *toCopyDownBeg 0xF68
 } _startupData;
 
 *********************************************************************************************
 SECTION-ALLOCATION SECTION
 Section Name                    Size  Type     From       To       Segment
 ---------------------------------------------------------------------------------------------
+.data                              1   R/W      0x100      0x100   RAM
 .init                            149     R      0x860      0x8F4   ROM
 .startData                        14     R      0x8F5      0x902   ROM
 .rodata                            4     R      0x903      0x906   ROM
-.text                           1554     R      0x907      0xF18   ROM
-.copy                              2     R      0xF19      0xF1A   ROM
+.text                           1633     R      0x907      0xF67   ROM
+.copy                              7     R      0xF68      0xF6E   ROM
 .abs_section_0                     1   N/I        0x0        0x0   .absSeg0
 .abs_section_1                     1   N/I        0x1        0x1   .absSeg1
 .abs_section_2                     1   N/I        0x2        0x2   .absSeg2
@@ -117,9 +118,9 @@ Section Name                    Size  Type     From       To       Segment
 .abs_section_38                    2   N/I       0x38       0x39   .absSeg77
 .abs_section_59                    2   N/I       0x59       0x5A   .absSeg78
 .abs_section_fe0c                  2   N/I     0xFE0C     0xFE0D   .absSeg79
-.bss                               8   R/W      0x100      0x107   RAM
-.common                            8   R/W      0x108      0x10F   RAM
-.stack                            80   R/W      0x110      0x15F   RAM
+.bss                              13   R/W      0x101      0x10D   RAM
+.common                           11   R/W      0x10E      0x118   RAM
+.stack                            80   R/W      0x119      0x168   RAM
 .vectSeg80_vect                    2     R     0xFFE0     0xFFE1   .vectSeg80
 .vectSeg81_vect                    2     R     0xFFEA     0xFFEB   .vectSeg81
 .vectSeg82_vect                    2     R     0xFFF0     0xFFF1   .vectSeg82
@@ -127,18 +128,18 @@ Section Name                    Size  Type     From       To       Segment
 .vectSeg84_vect                    2     R     0xFFFE     0xFFFF   .vectSeg84
 
 Summary of section sizes per section type:
-READ_ONLY (R):         6C5 (dec:     1733)
-READ_WRITE (R/W):       60 (dec:       96)
+READ_ONLY (R):         719 (dec:     1817)
+READ_WRITE (R/W):       69 (dec:      105)
 NO_INIT (N/I):          5B (dec:       91)
 
 *********************************************************************************************
 VECTOR-ALLOCATION SECTION
     Address     InitValue   InitFunction
 ---------------------------------------------------------------------------------------------
-     0xFFE0         0xBD8   irqPulsadores
-     0xFFEA         0xB8F   irqTIM2OF
-     0xFFF0         0xC92   irqTIM1OF
-     0xFFF4         0xC99   irqTIM1CH0
+     0xFFE0         0xC28   irqPulsadores
+     0xFFEA         0xBC2   irqTIM2OF
+     0xFFF0         0xCE8   irqTIM1OF
+     0xFFF4         0xCEF   irqTIM1CH0
      0xFFFE         0x8EC   _Startup
 
 *********************************************************************************************
@@ -150,55 +151,67 @@ MODULE:                 -- main.c.o --
      configuraCPU                               907       7       7       1   .text       
      habilitaLCDyDisplays                       90E      1B      27       1   .text       
      habilitaPulsadores                         929      14      20       1   .text       
-     demora100us                                93D       9       9       1   .text       
-     demora1ms                                  946       C      12       1   .text       
-     demoraEnms                                 952      17      23       6   .text       
-     BCDa7seg                                   969      36      54       1   .text       
-     apagaDisplays                              99F       9       9       4   .text       
-     activaDisplay                              9A8      26      38       3   .text       
-     formateaNumero4Digitos                     9CE      80     128       1   .text       
-     muestraCaracterEnDisplay                   A4E      54      84       2   .text       
-     muestraNumeroEnDisplay                     AA2      61      97       4   .text       
-     muestraNumero4Digitos                      B03      4C      76       1   .text       
-     modoTest                                   B4F      40      64       1   .text       
-     irqTIM2OF                                  B8F      49      73       0   .text       
-     irqPulsadores                              BD8      BA     186       1   .text       
-     irqTIM1OF                                  C92       7       7       0   .text       
-     irqTIM1CH0                                 C99       5       5       0   .text       
-     main                                       C9E      1C      28       1   .text       
-     modoPlay                                   CBA      D0     208       4   .text       
-     modoConfig                                 D8A      84     132       1   .text       
-     muestraModoConfig                          E0E      3D      61       1   .text       
+     inicializaKBI                              93D       7       7       1   .text       
+     configuraADC                               944       6       6       1   .text       
+     inicializaTIM1                             94A      11      17       1   .text       
+     inicializaTIM2                             95B       A      10       1   .text       
+     demora100us                                965       9       9       1   .text       
+     demora1ms                                  96E       B      11       1   .text       
+     demoraEnms                                 979      17      23       4   .text       
+     BCDa7seg                                   990      36      54       1   .text       
+     apagaDisplays                              9C6       9       9       5   .text       
+     activaDisplay                              9CF      26      38       3   .text       
+     formateaNumero4Digitos                     9F5      80     128       1   .text       
+     muestraCaracterEnDisplay                   A75      54      84       2   .text       
+     muestraNumeroEnDisplay                     AC9      61      97       4   .text       
+     muestraNumero4Digitos                      B2A      58      88       1   .text       
+     modoTest                                   B82      40      64       1   .text       
+     irqTIM2OF                                  BC2      66     102       0   .text       
+     irqPulsadores                              C28      C0     192       1   .text       
+     irqTIM1OF                                  CE8       7       7       0   .text       
+     irqTIM1CH0                                 CEF      67     103       0   .text       
+     main                                       D56      24      36       1   .text       
+     modoPlay                                   D7A      7A     122       1   .text       
+     modoConfig                                 DF4      69     105       1   .text       
+     muestraModoConfig                          E5D      3D      61       1   .text       
 - VARIABLES:
      KBI_MASK                                   903       4       4       2   .rodata     
-     P1mas                                      100       1       1       1   .bss        
-     P1menos                                    101       1       1       1   .bss        
-     P2mas                                      102       1       1       1   .bss        
-     P2menos                                    103       1       1       1   .bss        
-     ModoTest                                   104       1       1       1   .bss        
-     ModoConfig                                 105       1       1       1   .bss        
-     ReiniciarPartida                           106       1       1       1   .bss        
-     contador                                   107       1       1       3   .bss        
-     Antirrebote                                108       4       4       5   .common     
-     SW                                         10C       4       4       5   .common     
+     ComandoIR                                  100       1       1       1   .data       
+     P1mas                                      101       1       1       5   .bss        
+     P1menos                                    102       1       1       5   .bss        
+     P2mas                                      103       1       1       3   .bss        
+     P2menos                                    104       1       1       3   .bss        
+     ModoTest                                   105       1       1       3   .bss        
+     ModoConfig                                 106       1       1       3   .bss        
+     ReiniciarPartida                           107       1       1       3   .bss        
+     Timer3Seg                                  108       1       1       4   .bss        
+     ContadorTimer3Seg                          109       1       1       3   .bss        
+     ContadorParpadeo                           10A       1       1       3   .bss        
+     TickParpadeo                               10B       1       1       2   .bss        
+     Comando                                    10C       1       1       5   .bss        
+     BitTrama                                   10D       1       1       5   .bss        
+     Antirrebote                                10E       4       4       5   .common     
+     SW                                         112       4       4       5   .common     
+     AnchoDePulso                               116       2       2       3   .common     
+     i                                          118       1       1       9   .common     
 MODULE:                 -- RTSHC08.C.o (ansii.lib) --
 - PROCEDURES:
-     _IDIVMOD                                   E4B      69     105       2   .text       
-     _IDIVU                                     EB4      10      16       2   .text       
-     _IMODU                                     EC4      15      21       2   .text       
-     _IDIVU_8                                   ED9       C      12       1   .text       
-     _IMODU_8                                   EE5      10      16       1   .text       
-     _Jump_Table_Header_Offset                  EF5      24      36       2   .text       
+     _IDIVMOD                                   E9A      69     105       2   .text       
+     _IDIVU                                     F03      10      16       2   .text       
+     _IMODU                                     F13      15      21       2   .text       
+     _IDIVU_8                                   F28       C      12       1   .text       
+     _IMODU_8                                   F34      10      16       1   .text       
+     _Jump_Table_Header_Offset                  F44      24      36       2   .text       
 - VARIABLES:
 MODULE:                 -- MC68HC908AP32.C.o --
 - PROCEDURES:
 - VARIABLES:
      _PTA                                         0       1       1      19   .abs_section_0
-     _PTB                                         1       1       1       6   .abs_section_1
+     _PTB                                         1       1       1       5   .abs_section_1
      _PTC                                         2       1       1       4   .abs_section_2
-     _PTD                                         3       1       1      34   .abs_section_3
+     _PTD                                         3       1       1      20   .abs_section_3
      _DDRA                                        4       1       1       4   .abs_section_4
-     _DDRB                                        5       1       1       2   .abs_section_5
+     _DDRB                                        5       1       1       3   .abs_section_5
      _DDRC                                        6       1       1       2   .abs_section_6
      _DDRD                                        7       1       1       8   .abs_section_7
      _LEDA                                        C       1       1       0   .abs_section_c
@@ -212,16 +225,16 @@ MODULE:                 -- MC68HC908AP32.C.o --
      _SCS2                                       17       1       1       0   .abs_section_17
      _SCDR                                       18       1       1       0   .abs_section_18
      _SCBR                                       19       1       1       0   .abs_section_19
-     _KBSCR                                      1A       1       1       2   .abs_section_1a
-     _KBIER                                      1B       1       1      18   .abs_section_1b
+     _KBSCR                                      1A       1       1       3   .abs_section_1a
+     _KBIER                                      1B       1       1      19   .abs_section_1b
      _INTSCR2                                    1C       1       1       1   .abs_section_1c
      _CONFIG2                                    1D       1       1       1   .abs_section_1d
      _INTSCR1                                    1E       1       1       0   .abs_section_1e
      _CONFIG1                                    1F       1       1       1   .abs_section_1f
-     _T1SC                                       20       1       1       2   .abs_section_20
-     _T1SC0                                      25       1       1       1   .abs_section_25
+     _T1SC                                       20       1       1       6   .abs_section_20
+     _T1SC0                                      25       1       1       2   .abs_section_25
      _T1SC1                                      28       1       1       0   .abs_section_28
-     _T2SC                                       2B       1       1       1   .abs_section_2b
+     _T2SC                                       2B       1       1       2   .abs_section_2b
      _T2SC0                                      30       1       1       0   .abs_section_30
      _T2SC1                                      33       1       1       0   .abs_section_33
      _PCTL                                       36       1       1       0   .abs_section_36
@@ -246,11 +259,11 @@ MODULE:                 -- MC68HC908AP32.C.o --
      _MMFDR                                      4F       1       1       0   .abs_section_4f
      _TBCR                                       51       1       1       0   .abs_section_51
      _ADSCR                                      57       1       1       0   .abs_section_57
-     _ADICLK                                     58       1       1       0   .abs_section_58
+     _ADICLK                                     58       1       1       1   .abs_section_58
      _ADR1L                                      5B       1       1       0   .abs_section_5b
      _ADR2L                                      5C       1       1       0   .abs_section_5c
      _ADR3L                                      5D       1       1       0   .abs_section_5d
-     _ADASCR                                     5E       1       1       0   .abs_section_5e
+     _ADASCR                                     5E       1       1       1   .abs_section_5e
      _SBSR                                     FE00       1       1       0   .abs_section_fe00
      _SRSR                                     FE01       1       1       0   .abs_section_fe01
      _SBFCR                                    FE03       1       1       0   .abs_section_fe03
@@ -263,11 +276,11 @@ MODULE:                 -- MC68HC908AP32.C.o --
      _LVISR                                    FE0F       1       1       0   .abs_section_fe0f
      _COPCTL                                   FFFF       1       1       0   .abs_section_ffff
      _T1CNT                                      21       2       2       0   .abs_section_21
-     _T1MOD                                      23       2       2       0   .abs_section_23
-     _T1CH0                                      26       2       2       0   .abs_section_26
+     _T1MOD                                      23       2       2       2   .abs_section_23
+     _T1CH0                                      26       2       2       2   .abs_section_26
      _T1CH1                                      29       2       2       0   .abs_section_29
      _T2CNT                                      2C       2       2       0   .abs_section_2c
-     _T2MOD                                      2E       2       2       0   .abs_section_2e
+     _T2MOD                                      2E       2       2       2   .abs_section_2e
      _T2CH0                                      31       2       2       0   .abs_section_31
      _T2CH1                                      34       2       2       0   .abs_section_34
      _PMS                                        38       2       2       0   .abs_section_38
@@ -281,36 +294,40 @@ MODULE:                 -- Start08.c.o --
 - VARIABLES:
      _startupData                               8F5       6       6       6   .startData  
 - LABELS:
-     __SEG_END_SSTACK                           160       0       0       1               
+     __SEG_END_SSTACK                           169       0       0       1               
 
 *********************************************************************************************
 MODULE STATISTIC
   Name                                      Data   Code  Const
 ---------------------------------------------------------------------------------------------
-  main.c.o                                    16   1348      4
+  main.c.o                                    25   1427      4
   RTSHC08.C.o (ansii.lib)                      0    206      0
   MC68HC908AP32.C.o                           91      0      0
   Start08.c.o                                  0    149      0
-  other                                       80     24      2
+  other                                       80     24      7
 
 *********************************************************************************************
 SECTION USE IN OBJECT-ALLOCATION SECTION
 ---------------------------------------------------------------------------------------------
 SECTION: ".text"
-  configuraCPU habilitaLCDyDisplays habilitaPulsadores demora100us demora1ms 
-  demoraEnms BCDa7seg apagaDisplays activaDisplay formateaNumero4Digitos 
+  configuraCPU habilitaLCDyDisplays habilitaPulsadores inicializaKBI 
+  configuraADC inicializaTIM1 inicializaTIM2 demora100us demora1ms demoraEnms 
+  BCDa7seg apagaDisplays activaDisplay formateaNumero4Digitos 
   muestraCaracterEnDisplay muestraNumeroEnDisplay muestraNumero4Digitos 
   modoTest irqTIM2OF irqPulsadores irqTIM1OF irqTIM1CH0 main modoPlay 
   modoConfig muestraModoConfig _IDIVMOD _IDIVU _IMODU _IDIVU_8 _IMODU_8 
   _Jump_Table_Header_Offset 
+SECTION: ".data"
+  ComandoIR 
 SECTION: ".bss"
-  P1mas P1menos P2mas P2menos ModoTest ModoConfig ReiniciarPartida contador 
+  P1mas P1menos P2mas P2menos ModoTest ModoConfig ReiniciarPartida Timer3Seg 
+  ContadorTimer3Seg ContadorParpadeo TickParpadeo Comando BitTrama 
 SECTION: ".init"
   loadByte Init _Startup 
 SECTION: ".rodata"
   KBI_MASK 
 SECTION: ".common"
-  Antirrebote SW 
+  Antirrebote SW AnchoDePulso i 
 SECTION: ".abs_section_0"
   _PTA 
 SECTION: ".abs_section_1"
@@ -477,11 +494,11 @@ OBJECT LIST SORTED BY ADDRESS
      Name                                      Addr   hSize   dSize     Ref    Section   RLIB
 ---------------------------------------------------------------------------------------------
      _PTA                                         0       1       1      19   .abs_section_0
-     _PTB                                         1       1       1       6   .abs_section_1
+     _PTB                                         1       1       1       5   .abs_section_1
      _PTC                                         2       1       1       4   .abs_section_2
-     _PTD                                         3       1       1      34   .abs_section_3
+     _PTD                                         3       1       1      20   .abs_section_3
      _DDRA                                        4       1       1       4   .abs_section_4
-     _DDRB                                        5       1       1       2   .abs_section_5
+     _DDRB                                        5       1       1       3   .abs_section_5
      _DDRC                                        6       1       1       2   .abs_section_6
      _DDRD                                        7       1       1       8   .abs_section_7
      _LEDA                                        C       1       1       0   .abs_section_c
@@ -495,22 +512,22 @@ OBJECT LIST SORTED BY ADDRESS
      _SCS2                                       17       1       1       0   .abs_section_17
      _SCDR                                       18       1       1       0   .abs_section_18
      _SCBR                                       19       1       1       0   .abs_section_19
-     _KBSCR                                      1A       1       1       2   .abs_section_1a
-     _KBIER                                      1B       1       1      18   .abs_section_1b
+     _KBSCR                                      1A       1       1       3   .abs_section_1a
+     _KBIER                                      1B       1       1      19   .abs_section_1b
      _INTSCR2                                    1C       1       1       1   .abs_section_1c
      _CONFIG2                                    1D       1       1       1   .abs_section_1d
      _INTSCR1                                    1E       1       1       0   .abs_section_1e
      _CONFIG1                                    1F       1       1       1   .abs_section_1f
-     _T1SC                                       20       1       1       2   .abs_section_20
+     _T1SC                                       20       1       1       6   .abs_section_20
      _T1CNT                                      21       2       2       0   .abs_section_21
-     _T1MOD                                      23       2       2       0   .abs_section_23
-     _T1SC0                                      25       1       1       1   .abs_section_25
-     _T1CH0                                      26       2       2       0   .abs_section_26
+     _T1MOD                                      23       2       2       2   .abs_section_23
+     _T1SC0                                      25       1       1       2   .abs_section_25
+     _T1CH0                                      26       2       2       2   .abs_section_26
      _T1SC1                                      28       1       1       0   .abs_section_28
      _T1CH1                                      29       2       2       0   .abs_section_29
-     _T2SC                                       2B       1       1       1   .abs_section_2b
+     _T2SC                                       2B       1       1       2   .abs_section_2b
      _T2CNT                                      2C       2       2       0   .abs_section_2c
-     _T2MOD                                      2E       2       2       0   .abs_section_2e
+     _T2MOD                                      2E       2       2       2   .abs_section_2e
      _T2SC0                                      30       1       1       0   .abs_section_30
      _T2CH0                                      31       2       2       0   .abs_section_31
      _T2SC1                                      33       1       1       0   .abs_section_33
@@ -538,22 +555,30 @@ OBJECT LIST SORTED BY ADDRESS
      _MMFDR                                      4F       1       1       0   .abs_section_4f
      _TBCR                                       51       1       1       0   .abs_section_51
      _ADSCR                                      57       1       1       0   .abs_section_57
-     _ADICLK                                     58       1       1       0   .abs_section_58
+     _ADICLK                                     58       1       1       1   .abs_section_58
      _ADR0                                       59       2       2       0   .abs_section_59
      _ADR1L                                      5B       1       1       0   .abs_section_5b
      _ADR2L                                      5C       1       1       0   .abs_section_5c
      _ADR3L                                      5D       1       1       0   .abs_section_5d
-     _ADASCR                                     5E       1       1       0   .abs_section_5e
-     P1mas                                      100       1       1       1   .bss        
-     P1menos                                    101       1       1       1   .bss        
-     P2mas                                      102       1       1       1   .bss        
-     P2menos                                    103       1       1       1   .bss        
-     ModoTest                                   104       1       1       1   .bss        
-     ModoConfig                                 105       1       1       1   .bss        
-     ReiniciarPartida                           106       1       1       1   .bss        
-     contador                                   107       1       1       3   .bss        
-     Antirrebote                                108       4       4       5   .common     
-     SW                                         10C       4       4       5   .common     
+     _ADASCR                                     5E       1       1       1   .abs_section_5e
+     ComandoIR                                  100       1       1       1   .data       
+     P1mas                                      101       1       1       5   .bss        
+     P1menos                                    102       1       1       5   .bss        
+     P2mas                                      103       1       1       3   .bss        
+     P2menos                                    104       1       1       3   .bss        
+     ModoTest                                   105       1       1       3   .bss        
+     ModoConfig                                 106       1       1       3   .bss        
+     ReiniciarPartida                           107       1       1       3   .bss        
+     Timer3Seg                                  108       1       1       4   .bss        
+     ContadorTimer3Seg                          109       1       1       3   .bss        
+     ContadorParpadeo                           10A       1       1       3   .bss        
+     TickParpadeo                               10B       1       1       2   .bss        
+     Comando                                    10C       1       1       5   .bss        
+     BitTrama                                   10D       1       1       5   .bss        
+     Antirrebote                                10E       4       4       5   .common     
+     SW                                         112       4       4       5   .common     
+     AnchoDePulso                               116       2       2       3   .common     
+     i                                          118       1       1       9   .common     
      loadByte                                   860      17      23       5   .init       
      Init                                       877      75     117       1   .init       
      _Startup                                   8EC       9       9       0   .init       
@@ -561,31 +586,35 @@ OBJECT LIST SORTED BY ADDRESS
      configuraCPU                               907       7       7       1   .text       
      habilitaLCDyDisplays                       90E      1B      27       1   .text       
      habilitaPulsadores                         929      14      20       1   .text       
-     demora100us                                93D       9       9       1   .text       
-     demora1ms                                  946       C      12       1   .text       
-     demoraEnms                                 952      17      23       6   .text       
-     BCDa7seg                                   969      36      54       1   .text       
-     apagaDisplays                              99F       9       9       4   .text       
-     activaDisplay                              9A8      26      38       3   .text       
-     formateaNumero4Digitos                     9CE      80     128       1   .text       
-     muestraCaracterEnDisplay                   A4E      54      84       2   .text       
-     muestraNumeroEnDisplay                     AA2      61      97       4   .text       
-     muestraNumero4Digitos                      B03      4C      76       1   .text       
-     modoTest                                   B4F      40      64       1   .text       
-     irqTIM2OF                                  B8F      49      73       0   .text       
-     irqPulsadores                              BD8      BA     186       1   .text       
-     irqTIM1OF                                  C92       7       7       0   .text       
-     irqTIM1CH0                                 C99       5       5       0   .text       
-     main                                       C9E      1C      28       1   .text       
-     modoPlay                                   CBA      D0     208       4   .text       
-     modoConfig                                 D8A      84     132       1   .text       
-     muestraModoConfig                          E0E      3D      61       1   .text       
-     _IDIVMOD                                   E4B      69     105       2   .text       
-     _IDIVU                                     EB4      10      16       2   .text       
-     _IMODU                                     EC4      15      21       2   .text       
-     _IDIVU_8                                   ED9       C      12       1   .text       
-     _IMODU_8                                   EE5      10      16       1   .text       
-     _Jump_Table_Header_Offset                  EF5      24      36       2   .text       
+     inicializaKBI                              93D       7       7       1   .text       
+     configuraADC                               944       6       6       1   .text       
+     inicializaTIM1                             94A      11      17       1   .text       
+     inicializaTIM2                             95B       A      10       1   .text       
+     demora100us                                965       9       9       1   .text       
+     demora1ms                                  96E       B      11       1   .text       
+     demoraEnms                                 979      17      23       4   .text       
+     BCDa7seg                                   990      36      54       1   .text       
+     apagaDisplays                              9C6       9       9       5   .text       
+     activaDisplay                              9CF      26      38       3   .text       
+     formateaNumero4Digitos                     9F5      80     128       1   .text       
+     muestraCaracterEnDisplay                   A75      54      84       2   .text       
+     muestraNumeroEnDisplay                     AC9      61      97       4   .text       
+     muestraNumero4Digitos                      B2A      58      88       1   .text       
+     modoTest                                   B82      40      64       1   .text       
+     irqTIM2OF                                  BC2      66     102       0   .text       
+     irqPulsadores                              C28      C0     192       1   .text       
+     irqTIM1OF                                  CE8       7       7       0   .text       
+     irqTIM1CH0                                 CEF      67     103       0   .text       
+     main                                       D56      24      36       1   .text       
+     modoPlay                                   D7A      7A     122       1   .text       
+     modoConfig                                 DF4      69     105       1   .text       
+     muestraModoConfig                          E5D      3D      61       1   .text       
+     _IDIVMOD                                   E9A      69     105       2   .text       
+     _IDIVU                                     F03      10      16       2   .text       
+     _IMODU                                     F13      15      21       2   .text       
+     _IDIVU_8                                   F28       C      12       1   .text       
+     _IMODU_8                                   F34      10      16       1   .text       
+     _Jump_Table_Header_Offset                  F44      24      36       2   .text       
      _SBSR                                     FE00       1       1       0   .abs_section_fe00
      _SRSR                                     FE01       1       1       0   .abs_section_fe01
      _SBFCR                                    FE03       1       1       0   .abs_section_fe03
@@ -604,10 +633,8 @@ UNUSED-OBJECTS SECTION
 ---------------------------------------------------------------------------------------------
 NOT USED PROCEDURES
 main.c.o:
-  inicializaPLL habilitaLeds inicializaKBI inicializaSPI configuraADC 
-  inicializaTIM2 demora1us demoraEnus demoraEns hexa7seg apagaSegmentos 
-  formateaNumero2Digitos muestraNumero2Digitos datoLCD comandoLCD inicializaLCD 
-  muestraCaracterEnLCD posicionaCursorLCD muestraTextoEnLCD enviaSPI lecturaAD 
+  inicializaPLL habilitaLeds demora1us demoraEnus demoraEns hexa7seg 
+  apagaSegmentos formateaNumero2Digitos muestraNumero2Digitos lecturaAD 
   convierteEnmV convierteEnTemp 
 RTSHC08.C.o (ansii.lib):
   _PUSH_ARGS_L _PUSH_ARGS_D _ENTER_UNARY_L _ENTER_UNARY_L64 _ENTER_UNARY_L64_4 
@@ -633,7 +660,13 @@ RTSHC08.C.o (ansii.lib):
 *********************************************************************************************
 COPYDOWN SECTION
 ---------------------------------------------------------------------------------------------
-------- ROM-ADDRESS: 0xF19 ---- SIZE       2 ---
+------- ROM-ADDRESS: 0xF68 ---- SIZE       4 ---
+Filling bytes inserted
+ 00010100
+------- ROM-ADDRESS: 0xF6C ---- RAM-ADDRESS: 0x100 ---- SIZE       1 ---
+Name of initialized Object : ComandoIR
+ 81
+------- ROM-ADDRESS: 0xF6D ---- SIZE       2 ---
 Filling bytes inserted
  0000
 
@@ -645,6 +678,10 @@ _Startup                  USES __SEG_END_SSTACK Init main
 configuraCPU              USES _CONFIG1 _CONFIG2 
 habilitaLCDyDisplays      USES _DDRA _DDRB _INTSCR2 _DDRC _DDRD 
 habilitaPulsadores        USES _DDRD _KBIER _KBSCR 
+inicializaKBI             USES _KBIER _KBSCR 
+configuraADC              USES _ADASCR _ADICLK 
+inicializaTIM1            USES _T1SC _T1SC0 _T1MOD 
+inicializaTIM2            USES _T2SC _T2MOD 
 demora1ms                 USES demora100us 
 demoraEnms                USES demora1ms 
 BCDa7seg                  USES _Jump_Table_Header_Offset 
@@ -654,20 +691,26 @@ activaDisplay             USES apagaDisplays _Jump_Table_Header_Offset _PTC
 formateaNumero4Digitos    USES _IDIVU _IMODU _IMODU_8 _IDIVU_8 
 muestraCaracterEnDisplay  USES _PTD _PTA 
 muestraNumeroEnDisplay    USES BCDa7seg _PTD _PTA 
-muestraNumero4Digitos     USES formateaNumero4Digitos apagaDisplays 
-                                muestraNumeroEnDisplay activaDisplay _PTA demoraEnms 
+muestraNumero4Digitos     USES apagaDisplays TickParpadeo 
+                                formateaNumero4Digitos muestraNumeroEnDisplay activaDisplay _PTA 
+                                demoraEnms 
 modoTest                  USES apagaDisplays muestraNumeroEnDisplay _PTA 
                                 activaDisplay demoraEnms 
-irqTIM2OF                 USES Antirrebote _KBIER KBI_MASK contador _PTB _T2SC 
-irqPulsadores             USES _PTD SW KBI_MASK _KBIER Antirrebote ModoTest 
-                                ReiniciarPartida ModoConfig P1mas P1menos P2mas P2menos 
-                                irqPulsadores _KBSCR 
+irqTIM2OF                 USES i Antirrebote _KBIER KBI_MASK Timer3Seg 
+                                ContadorTimer3Seg ContadorParpadeo TickParpadeo _T2SC 
+irqPulsadores             USES _PTD SW i KBI_MASK _KBIER Antirrebote ModoTest 
+                                Timer3Seg ReiniciarPartida ModoConfig P1mas P1menos 
+                                P2mas P2menos irqPulsadores _KBSCR 
 irqTIM1OF                 USES _T1SC 
-irqTIM1CH0                USES _T1SC0 
-main                      USES configuraCPU habilitaPulsadores 
-                                habilitaLCDyDisplays modoConfig modoPlay 
-modoPlay                  USES muestraNumero4Digitos _PTD demoraEnms modoPlay 
-modoConfig                USES _PTD modoTest demoraEnms muestraModoConfig 
+irqTIM1CH0                USES _PTB _T1SC AnchoDePulso _T1CH0 BitTrama Comando 
+                                ComandoIR _T1SC0 
+main                      USES configuraCPU habilitaPulsadores inicializaKBI 
+                                habilitaLCDyDisplays inicializaTIM1 inicializaTIM2 configuraADC 
+                                _DDRB modoConfig modoPlay 
+modoPlay                  USES muestraNumero4Digitos ModoConfig 
+                                ReiniciarPartida P1mas P1menos P2mas P2menos 
+modoConfig                USES ModoTest modoTest Timer3Seg P1mas P1menos 
+                                demoraEnms muestraModoConfig 
 muestraModoConfig         USES muestraCaracterEnDisplay muestraNumeroEnDisplay 
                                 activaDisplay demoraEnms 
 _IDIVU                    USES _IDIVMOD 
@@ -686,7 +729,15 @@ DEPENDENCY TREE
  |  |    
  |  +- habilitaPulsadores  
  |  |    
+ |  +- inicializaKBI       
+ |  |    
  |  +- habilitaLCDyDisplays
+ |  |    
+ |  +- inicializaTIM1      
+ |  |    
+ |  +- inicializaTIM2      
+ |  |    
+ |  +- configuraADC        
  |  |    
  |  +- modoConfig          
  |  |  | 
@@ -727,35 +778,33 @@ DEPENDENCY TREE
  |  +- modoPlay            
  |     | 
  |     +- muestraNumero4Digitos
- |     |  | 
- |     |  +- formateaNumero4Digitos
- |     |  |  | 
- |     |  |  +- _IDIVU              
- |     |  |  |  | 
- |     |  |  |  +- _IDIVMOD            
- |     |  |  |       
- |     |  |  +- _IMODU              
- |     |  |  |  | 
- |     |  |  |  +- _IDIVMOD             (see above)
- |     |  |  |     
- |     |  |  +- _IMODU_8            
- |     |  |  |  | 
- |     |  |  |  +- _IMODU               (see above)
- |     |  |  |     
- |     |  |  +- _IDIVU_8            
- |     |  |     | 
- |     |  |     +- _IDIVU               (see above)
- |     |  |        
- |     |  +- apagaDisplays        (see above)
- |     |  |  
- |     |  +- muestraNumeroEnDisplay (see above)
- |     |  |  
- |     |  +- activaDisplay        (see above)
- |     |  |  
- |     |  +- demoraEnms           (see above)
- |     |     
- |     +- demoraEnms           (see above)
- |        
+ |        | 
+ |        +- apagaDisplays        (see above)
+ |        |  
+ |        +- formateaNumero4Digitos
+ |        |  | 
+ |        |  +- _IDIVU              
+ |        |  |  | 
+ |        |  |  +- _IDIVMOD            
+ |        |  |       
+ |        |  +- _IMODU              
+ |        |  |  | 
+ |        |  |  +- _IDIVMOD             (see above)
+ |        |  |     
+ |        |  +- _IMODU_8            
+ |        |  |  | 
+ |        |  |  +- _IMODU               (see above)
+ |        |  |     
+ |        |  +- _IDIVU_8            
+ |        |     | 
+ |        |     +- _IDIVU               (see above)
+ |        |        
+ |        +- muestraNumeroEnDisplay (see above)
+ |        |  
+ |        +- activaDisplay        (see above)
+ |        |  
+ |        +- demoraEnms           (see above)
+ |           
  +- _Startup            
     | 
     +- Init                
@@ -779,5 +828,5 @@ STATISTIC SECTION
 ExeFile:
 --------
 Number of blocks to be downloaded: 9
-Total size of all blocks to be downloaded: 1733
+Total size of all blocks to be downloaded: 1817
 
