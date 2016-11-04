@@ -102,7 +102,7 @@ unsigned char ComandoIR = 129;      // Comando IR recibido (este valor inicial e
 unsigned int  AnchoDePulso;         // lapso de tiempo capturado por TIM1
 unsigned char Comando = 0;          // Primeros 7 bits de la trama SIRC
 unsigned char BitTrama = 0;         // Contador de bits recibidos
-unsigned char i;                    // para los bucles for() de las ISR
+unsigned char i, j;                 // para los bucles for() de las ISR
 
 /** ---------------- Seccion inicializacion de modulos ------------------ **/
 
@@ -412,7 +412,7 @@ void apagaDisplays(void)
 }
 
 void activaDisplay(unsigned char display)
-/** habilita el catodo del display indicado **/
+/** habilita solamente el catodo del display indicado **/
 /** display= (1, 2, 3, 4) **/
 {
   apagaDisplays();
@@ -586,6 +586,7 @@ unsigned int convierteEnTemp(unsigned int valor, unsigned char escala)
 
 void modoTest(void)
 /** enciende TODOS los segmentos en los 4 Displays **/
+// TODO: encender GUION y DOS_PUNTOS
 {
     unsigned char i, digitos[4];
     digitos[0]=8;
@@ -594,11 +595,11 @@ void modoTest(void)
     digitos[3]=8;
 
     // barro los displays para mostrar el mumero
+    apagaDisplays();
+
     for (i = 0; i < 4; i++)
     {
-      apagaDisplays();
-      muestraNumeroEnDisplay(digitos[i], OFF);
-      EnciendePuntoDecimal;
+      muestraNumeroEnDisplay(digitos[i], ON);
       activaDisplay(i+1);
       // dejo encendido el display un instante para persistencia visual
       demoraEnms(DEMORA_DISPLAY_MS);
@@ -650,10 +651,10 @@ void interrupt irqPulsadores(void)
    SW[2] = SW3;  // P1- (PTD6)
    SW[3] = SW4;  // P1+ (PTD7)
 
-   for (i = 0; i < 4; i++) {            // chequeo cada pulsador
-       if (SW[i] == 0) {                // pulsador activo
-          KBIER &= ~KBI_MASK[i];        // deshabilito IRQ para ese pulsador
-          Antirrebote[i] = ANTIRREBOTE; // y le asigno un antirrebote
+   for (j = 0; j < 4; j++) {            // chequeo cada pulsador
+       if (SW[j] == 0) {                // pulsador activo
+          KBIER &= ~KBI_MASK[j];        // deshabilito IRQ para ese pulsador
+          Antirrebote[j] = ANTIRREBOTE; // y le asigno un antirrebote
           
           // Modo Test (P2+ y P2-)
           if (!KBIER_KBIE5 & !KBIER_KBIE4) {
@@ -688,6 +689,13 @@ void interrupt irqPulsadores(void)
     }
 
   KBSCR_ACK = 1;  // interrupcion atendida
+}
+
+void interrupt irqTBM(void)
+/**  Interrupcion periodica cada 1 seg **/
+{
+  
+  TBCR_TACK = 1;    // Interrupcion atendida
 }
 
 void interrupt irqTIM1OF(void)
@@ -727,6 +735,9 @@ void interrupt irqTIM1CH0(void)
   }
 
   if (BitTrama >= 7) ComandoIR = Comando;  // si recibi al menos 7 bits guardo el comando
-  
+
+  // la logica del manejo de botones (Facundo)
+
+
   T1SC0_CH0F=0;   // interrupcion atendida
 }

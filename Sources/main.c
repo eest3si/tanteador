@@ -24,6 +24,9 @@ void main(void){
     EnableInterrupts;
   
     for(;;){
+    	// mensaje introductorio (Bejarano)
+    	// configura hora/fecha (Schmukler)
+    	// menu principal (Carbajal)
         pepe=modoConfig();
      
         modoPlay(pepe+1);

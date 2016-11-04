@@ -24,8 +24,8 @@ Entry point: 0x8EC (_Startup)
 _startupData is allocated at 0x8F5 and uses 6 Bytes
 extern struct _tagStartup {
   unsigned nofZeroOut     1
-  _Range   pZeroOut       0x100     25
-  _Copy    *toCopyDownBeg 0xF68
+  _Range   pZeroOut       0x100     26
+  _Copy    *toCopyDownBeg 0xF67
 } _startupData;
 
 *********************************************************************************************
@@ -36,8 +36,8 @@ Section Name                    Size  Type     From       To       Segment
 .init                            149     R      0x860      0x8F4   ROM
 .startData                        14     R      0x8F5      0x902   ROM
 .rodata                            4     R      0x903      0x906   ROM
-.text                           1633     R      0x907      0xF67   ROM
-.copy                              7     R      0xF68      0xF6E   ROM
+.text                           1632     R      0x907      0xF66   ROM
+.copy                              7     R      0xF67      0xF6D   ROM
 .abs_section_0                     1   N/I        0x0        0x0   .absSeg0
 .abs_section_1                     1   N/I        0x1        0x1   .absSeg1
 .abs_section_2                     1   N/I        0x2        0x2   .absSeg2
@@ -119,8 +119,8 @@ Section Name                    Size  Type     From       To       Segment
 .abs_section_59                    2   N/I       0x59       0x5A   .absSeg78
 .abs_section_fe0c                  2   N/I     0xFE0C     0xFE0D   .absSeg79
 .bss                              13   R/W      0x101      0x10D   RAM
-.common                           11   R/W      0x10E      0x118   RAM
-.stack                            80   R/W      0x119      0x168   RAM
+.common                           12   R/W      0x10E      0x119   RAM
+.stack                            80   R/W      0x11A      0x169   RAM
 .vectSeg80_vect                    2     R     0xFFE0     0xFFE1   .vectSeg80
 .vectSeg81_vect                    2     R     0xFFEA     0xFFEB   .vectSeg81
 .vectSeg82_vect                    2     R     0xFFF0     0xFFF1   .vectSeg82
@@ -128,18 +128,18 @@ Section Name                    Size  Type     From       To       Segment
 .vectSeg84_vect                    2     R     0xFFFE     0xFFFF   .vectSeg84
 
 Summary of section sizes per section type:
-READ_ONLY (R):         719 (dec:     1817)
-READ_WRITE (R/W):       69 (dec:      105)
+READ_ONLY (R):         718 (dec:     1816)
+READ_WRITE (R/W):       6A (dec:      106)
 NO_INIT (N/I):          5B (dec:       91)
 
 *********************************************************************************************
 VECTOR-ALLOCATION SECTION
     Address     InitValue   InitFunction
 ---------------------------------------------------------------------------------------------
-     0xFFE0         0xC28   irqPulsadores
-     0xFFEA         0xBC2   irqTIM2OF
-     0xFFF0         0xCE8   irqTIM1OF
-     0xFFF4         0xCEF   irqTIM1CH0
+     0xFFE0         0xC27   irqPulsadores
+     0xFFEA         0xBC1   irqTIM2OF
+     0xFFF0         0xCE7   irqTIM1OF
+     0xFFF4         0xCEE   irqTIM1CH0
      0xFFFE         0x8EC   _Startup
 
 *********************************************************************************************
@@ -165,15 +165,15 @@ MODULE:                 -- main.c.o --
      muestraCaracterEnDisplay                   A75      54      84       2   .text       
      muestraNumeroEnDisplay                     AC9      61      97       4   .text       
      muestraNumero4Digitos                      B2A      58      88       1   .text       
-     modoTest                                   B82      40      64       1   .text       
-     irqTIM2OF                                  BC2      66     102       0   .text       
-     irqPulsadores                              C28      C0     192       1   .text       
-     irqTIM1OF                                  CE8       7       7       0   .text       
-     irqTIM1CH0                                 CEF      67     103       0   .text       
-     main                                       D56      24      36       1   .text       
-     modoPlay                                   D7A      7A     122       1   .text       
-     modoConfig                                 DF4      69     105       1   .text       
-     muestraModoConfig                          E5D      3D      61       1   .text       
+     modoTest                                   B82      3F      63       1   .text       
+     irqTIM2OF                                  BC1      66     102       0   .text       
+     irqPulsadores                              C27      C0     192       1   .text       
+     irqTIM1OF                                  CE7       7       7       0   .text       
+     irqTIM1CH0                                 CEE      67     103       0   .text       
+     main                                       D55      24      36       1   .text       
+     modoPlay                                   D79      7A     122       1   .text       
+     modoConfig                                 DF3      69     105       1   .text       
+     muestraModoConfig                          E5C      3D      61       1   .text       
 - VARIABLES:
      KBI_MASK                                   903       4       4       2   .rodata     
      ComandoIR                                  100       1       1       1   .data       
@@ -193,20 +193,21 @@ MODULE:                 -- main.c.o --
      Antirrebote                                10E       4       4       5   .common     
      SW                                         112       4       4       5   .common     
      AnchoDePulso                               116       2       2       3   .common     
-     i                                          118       1       1       9   .common     
+     i                                          118       1       1       5   .common     
+     j                                          119       1       1       4   .common     
 MODULE:                 -- RTSHC08.C.o (ansii.lib) --
 - PROCEDURES:
-     _IDIVMOD                                   E9A      69     105       2   .text       
-     _IDIVU                                     F03      10      16       2   .text       
-     _IMODU                                     F13      15      21       2   .text       
-     _IDIVU_8                                   F28       C      12       1   .text       
-     _IMODU_8                                   F34      10      16       1   .text       
-     _Jump_Table_Header_Offset                  F44      24      36       2   .text       
+     _IDIVMOD                                   E99      69     105       2   .text       
+     _IDIVU                                     F02      10      16       2   .text       
+     _IMODU                                     F12      15      21       2   .text       
+     _IDIVU_8                                   F27       C      12       1   .text       
+     _IMODU_8                                   F33      10      16       1   .text       
+     _Jump_Table_Header_Offset                  F43      24      36       2   .text       
 - VARIABLES:
 MODULE:                 -- MC68HC908AP32.C.o --
 - PROCEDURES:
 - VARIABLES:
-     _PTA                                         0       1       1      19   .abs_section_0
+     _PTA                                         0       1       1      18   .abs_section_0
      _PTB                                         1       1       1       5   .abs_section_1
      _PTC                                         2       1       1       4   .abs_section_2
      _PTD                                         3       1       1      20   .abs_section_3
@@ -294,13 +295,13 @@ MODULE:                 -- Start08.c.o --
 - VARIABLES:
      _startupData                               8F5       6       6       6   .startData  
 - LABELS:
-     __SEG_END_SSTACK                           169       0       0       1               
+     __SEG_END_SSTACK                           16A       0       0       1               
 
 *********************************************************************************************
 MODULE STATISTIC
   Name                                      Data   Code  Const
 ---------------------------------------------------------------------------------------------
-  main.c.o                                    25   1427      4
+  main.c.o                                    26   1426      4
   RTSHC08.C.o (ansii.lib)                      0    206      0
   MC68HC908AP32.C.o                           91      0      0
   Start08.c.o                                  0    149      0
@@ -327,7 +328,7 @@ SECTION: ".init"
 SECTION: ".rodata"
   KBI_MASK 
 SECTION: ".common"
-  Antirrebote SW AnchoDePulso i 
+  Antirrebote SW AnchoDePulso i j 
 SECTION: ".abs_section_0"
   _PTA 
 SECTION: ".abs_section_1"
@@ -493,7 +494,7 @@ SECTION: ".abs_section_fe0c"
 OBJECT LIST SORTED BY ADDRESS
      Name                                      Addr   hSize   dSize     Ref    Section   RLIB
 ---------------------------------------------------------------------------------------------
-     _PTA                                         0       1       1      19   .abs_section_0
+     _PTA                                         0       1       1      18   .abs_section_0
      _PTB                                         1       1       1       5   .abs_section_1
      _PTC                                         2       1       1       4   .abs_section_2
      _PTD                                         3       1       1      20   .abs_section_3
@@ -578,7 +579,8 @@ OBJECT LIST SORTED BY ADDRESS
      Antirrebote                                10E       4       4       5   .common     
      SW                                         112       4       4       5   .common     
      AnchoDePulso                               116       2       2       3   .common     
-     i                                          118       1       1       9   .common     
+     i                                          118       1       1       5   .common     
+     j                                          119       1       1       4   .common     
      loadByte                                   860      17      23       5   .init       
      Init                                       877      75     117       1   .init       
      _Startup                                   8EC       9       9       0   .init       
@@ -600,21 +602,21 @@ OBJECT LIST SORTED BY ADDRESS
      muestraCaracterEnDisplay                   A75      54      84       2   .text       
      muestraNumeroEnDisplay                     AC9      61      97       4   .text       
      muestraNumero4Digitos                      B2A      58      88       1   .text       
-     modoTest                                   B82      40      64       1   .text       
-     irqTIM2OF                                  BC2      66     102       0   .text       
-     irqPulsadores                              C28      C0     192       1   .text       
-     irqTIM1OF                                  CE8       7       7       0   .text       
-     irqTIM1CH0                                 CEF      67     103       0   .text       
-     main                                       D56      24      36       1   .text       
-     modoPlay                                   D7A      7A     122       1   .text       
-     modoConfig                                 DF4      69     105       1   .text       
-     muestraModoConfig                          E5D      3D      61       1   .text       
-     _IDIVMOD                                   E9A      69     105       2   .text       
-     _IDIVU                                     F03      10      16       2   .text       
-     _IMODU                                     F13      15      21       2   .text       
-     _IDIVU_8                                   F28       C      12       1   .text       
-     _IMODU_8                                   F34      10      16       1   .text       
-     _Jump_Table_Header_Offset                  F44      24      36       2   .text       
+     modoTest                                   B82      3F      63       1   .text       
+     irqTIM2OF                                  BC1      66     102       0   .text       
+     irqPulsadores                              C27      C0     192       1   .text       
+     irqTIM1OF                                  CE7       7       7       0   .text       
+     irqTIM1CH0                                 CEE      67     103       0   .text       
+     main                                       D55      24      36       1   .text       
+     modoPlay                                   D79      7A     122       1   .text       
+     modoConfig                                 DF3      69     105       1   .text       
+     muestraModoConfig                          E5C      3D      61       1   .text       
+     _IDIVMOD                                   E99      69     105       2   .text       
+     _IDIVU                                     F02      10      16       2   .text       
+     _IMODU                                     F12      15      21       2   .text       
+     _IDIVU_8                                   F27       C      12       1   .text       
+     _IMODU_8                                   F33      10      16       1   .text       
+     _Jump_Table_Header_Offset                  F43      24      36       2   .text       
      _SBSR                                     FE00       1       1       0   .abs_section_fe00
      _SRSR                                     FE01       1       1       0   .abs_section_fe01
      _SBFCR                                    FE03       1       1       0   .abs_section_fe03
@@ -660,13 +662,13 @@ RTSHC08.C.o (ansii.lib):
 *********************************************************************************************
 COPYDOWN SECTION
 ---------------------------------------------------------------------------------------------
-------- ROM-ADDRESS: 0xF68 ---- SIZE       4 ---
+------- ROM-ADDRESS: 0xF67 ---- SIZE       4 ---
 Filling bytes inserted
  00010100
-------- ROM-ADDRESS: 0xF6C ---- RAM-ADDRESS: 0x100 ---- SIZE       1 ---
+------- ROM-ADDRESS: 0xF6B ---- RAM-ADDRESS: 0x100 ---- SIZE       1 ---
 Name of initialized Object : ComandoIR
  81
-------- ROM-ADDRESS: 0xF6D ---- SIZE       2 ---
+------- ROM-ADDRESS: 0xF6C ---- SIZE       2 ---
 Filling bytes inserted
  0000
 
@@ -694,11 +696,11 @@ muestraNumeroEnDisplay    USES BCDa7seg _PTD _PTA
 muestraNumero4Digitos     USES apagaDisplays TickParpadeo 
                                 formateaNumero4Digitos muestraNumeroEnDisplay activaDisplay _PTA 
                                 demoraEnms 
-modoTest                  USES apagaDisplays muestraNumeroEnDisplay _PTA 
+modoTest                  USES apagaDisplays muestraNumeroEnDisplay 
                                 activaDisplay demoraEnms 
 irqTIM2OF                 USES i Antirrebote _KBIER KBI_MASK Timer3Seg 
                                 ContadorTimer3Seg ContadorParpadeo TickParpadeo _T2SC 
-irqPulsadores             USES _PTD SW i KBI_MASK _KBIER Antirrebote ModoTest 
+irqPulsadores             USES _PTD SW j KBI_MASK _KBIER Antirrebote ModoTest 
                                 Timer3Seg ReiniciarPartida ModoConfig P1mas P1menos 
                                 P2mas P2menos irqPulsadores _KBSCR 
 irqTIM1OF                 USES _T1SC 
@@ -827,6 +829,6 @@ STATISTIC SECTION
 
 ExeFile:
 --------
-Number of blocks to be downloaded: 9
-Total size of all blocks to be downloaded: 1817
+Number of blocks to be downloaded: 8
+Total size of all blocks to be downloaded: 1816
 

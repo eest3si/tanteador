@@ -33,3 +33,4 @@ VECTOR ADDRESS 0xFFE0 irqPulsadores // KBI (pulsadores)
 VECTOR ADDRESS 0xFFF0 irqTIM1OF     // TIM1 Overflow
 VECTOR ADDRESS 0xFFF4 irqTIM1CH0    // TIM1 CH0 (control remoto)
 VECTOR ADDRESS 0xFFEA irqTIM2OF     // TIM2 Overflow (base de tiempo 100 ms)
+VECTOR ADDRESS 0xFFD2 irqTBM        // TBM (periodica cada 1 seg)
