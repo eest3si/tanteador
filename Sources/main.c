@@ -17,6 +17,7 @@ void main(void){
     habilitaPulsadores();
     inicializaKBI();
     habilitaLCDyDisplays();
+    habilitaGuionY2Puntos();
     inicializaTIM1();       // Input-capture para el control remoto IR
     inicializaTIM2();       // base de tiempo de 100 ms
     configuraADC();         // para el sensor de temperatura (ADCH3/PTA3)
@@ -25,8 +26,9 @@ void main(void){
   
     for(;;){
     	// mensaje introductorio (Bejarano)
-    	// configura hora/fecha (Schmukler)
+    	configuraFechaHora();
     	// menu principal (Carbajal)
+    	
         pepe=modoConfig();
      
         modoPlay(pepe+1);
