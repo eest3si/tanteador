@@ -99,8 +99,10 @@ unsigned char Okey = FALSE;				// Flag boton OK del remoto
 unsigned char ModoTest = FALSE; 		// Flag Modo Test
 unsigned char ModoConfig = FALSE;		// Flag Modo Config
 unsigned char ReiniciarPartida = FALSE;	// Flag Restart Game
-unsigned char Timer5Seg = OFF;		// Flag que esta en "1" durante 5 segs
+unsigned char Timer5Seg = OFF;			// Flag que esta en "1" durante 5 segs
 unsigned char ContadorTimer5Seg = 0;
+unsigned char Timer1Min = OFF;			// Flag que esta en "1" durante 1 minuto
+unsigned int  ContadorTimer1Min = 0;
 unsigned char ContadorParpadeo = 0;
 unsigned char Hora = 12;
 unsigned char Minutos = 0;
@@ -1000,6 +1002,16 @@ void interrupt irqTIM2OF(void)
     }
     else
       ContadorTimer5Seg++;
+  }
+
+  // para el timer de 1 minuto (idle timeout)
+  if (Timer1Min) {
+  	if (ContadorTimer1Min = 600) {
+  		ContadorTimer1Min = 0;
+  		Timer1Min = OFF;
+  	}
+  	else
+  		ContadorTimer1Min++;
   }
 
   // para el parpadeo de los displays c/ 500 mseg

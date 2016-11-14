@@ -5,11 +5,14 @@
 /*-------------Prototipos------------*/
 void modoPlay(unsigned char);
 void modoInfo(unsigned char);
+unsigned char modoMenu(void);
 
 /**-------------Main-------------**/
 
-void main(void) {                          
-    
+void main(void){
+
+    unsigned char opcion = 0;
+
     configuraCPU();
     //inicializaPLL();
     habilitaPulsadores();
@@ -21,19 +24,23 @@ void main(void) {
     configuraADC();         // para el sensor de temperatura (ADCH3/PTA3)
     HabilitarSensorIR;      // conectado a TIM1CH0/PTB4 
     EnableInterrupts;
+
+    modoIntro();
+    configuraFechaHora();
     
     for(;;){
-    
-    	modoIntro();
-    	configuraFechaHora();
-    	// menu principal (Carbajal)
-    	
-      modoPlay(modoConfig());
+    	// menu principal (Carbajal)   	 
+        opcion = modoMenu();
 
+        if (opcion)
+            modoPlay(modoConfig());
+        else
+            modoInfo(FALSE);
     } /* loop forever */
 } /* fin main */
 
-/** --------- Seccion de funciones -------------- **/
+
+/** --------- Seccion funciones -------------- **/
 
 void modoPlay(unsigned char topePartida)
 /** version inicial por Bourgez **/
@@ -137,6 +144,78 @@ void modoPlay(unsigned char topePartida)
     }
 }
 
+unsigned char modoMenu(void)
+/** menu principal (Carbajal) **/
+/** permite elegir entre "modo play" y "modo info" **/
+/** va al modo info tras 1 minuto de inactividad **/
+{
+    unsigned char pulso = 0;
+    
+    //Timer1Min = ON;
+    //while(Timer1Min) // lo reestablece la ISR
+
+    while(TRUE) {
+
+        if (P1mas) {
+        	P1mas = OFF;	
+        	pulso++;
+          //ContadorTimer1Min = 0;  // reseteo el timeout por inactividad
+        }
+
+        if (pulso >= 2)
+            pulso=0;
+
+        // modo play (muestra PP)
+        if (pulso == 0) {
+            muestraEnDisplay(0x73); // P
+            activaDisplay(4);
+            demoraEnms(DEMORA_DISPLAY_MS);
+            activaDisplay(3);
+            demoraEnms(DEMORA_DISPLAY_MS);
+
+            // confirmacion del usuario
+            if (P1menos) {
+                limpiaFlagsGlobales();
+                //Timer1Min = OFF;
+                //ContadorTimer1Min = 0;
+                return TRUE;
+            }
+        }
+
+        // modo info
+        if (pulso == 1) {
+            muestraEnDisplay(0x06);         // I
+            activaDisplay(4);
+            demoraEnms(DEMORA_DISPLAY_MS);
+            DISPLAY_4 = OFF;
+            
+            muestraEnDisplay(0x54); // n
+            activaDisplay(3);
+            demoraEnms(DEMORA_DISPLAY_MS);
+            DISPLAY_3 = OFF;
+    
+            muestraEnDisplay(0x71); // F
+            activaDisplay(2);
+            demoraEnms(DEMORA_DISPLAY_MS);
+            DISPLAY_2 = OFF;
+    
+            muestraEnDisplay(0x5C); // o
+            activaDisplay(1);
+            demoraEnms(DEMORA_DISPLAY_MS);
+            DISPLAY_1 = OFF;
+
+            if (P1menos) {     
+                limpiaFlagsGlobales();
+                //Timer1Min = OFF;
+                //ContadorTimer1Min = 0;
+                return FALSE;
+            }
+        }
+    }
+    // salgo por timeout (va al modo Info)
+    return FALSE;
+}
+
 void modoInfo(unsigned char exit) {
 /** muestra hora, fecha y temperatura ciclicamente cada 5 seg **/
 /** por Juarez **/
@@ -144,7 +223,10 @@ void modoInfo(unsigned char exit) {
 unsigned int cont=0;
  
 while(!exit){
-demoraEnms(10);
+demoraEnms(500);
+GUION = ~GUION;
+if(ReiniciarPartida) break;
+/*
 cont++;
 
   if(cont>0 && cont<500){
@@ -156,8 +238,6 @@ cont++;
   if(cont>1000 && cont<1500){
   muestraTemperatura();
   }
-
+*/
 }
-
-
 }
