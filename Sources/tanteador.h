@@ -2,8 +2,8 @@
 **    LIBRERIA DE FUNCIONES PARA EL PROYECTO TANTEADOR DE PING-PONG
 **
 **     Archivo    : tanteador.h
-**     Version    : 1.6
-**     Fecha      : 20161106
+**     Version    : 1.7
+**     Fecha      : 20161113
 **     Micro      : MC68HC908AP8CFB (44 pines)
 **     Autores    : 6to 1ra (A) 2016
 **
@@ -22,8 +22,12 @@
 #define OUTPUT 1
 
 /* Macros para los leds de proposito general */
-#define GUION       	      PTA_PTA2  // activo alto
-#define DOS_PUNTOS	    	  PTB_PTB0  // activo bajo
+#define GUION       	      PTA_PTA2  		// activo alto
+#define DOS_PUNTOS	    	  PTB_PTB0  		// activo bajo
+#define EnciendeGuion		  GUION = ON;		// activo alto
+#define ApagaGuion			  GUION = OFF;
+#define Enciende2Puntos		  DOS_PUNTOS = ~ON;	// activo bajo
+#define Apaga2Puntos		  DOS_PUNTOS = ~OFF;
 
 /* Macros para los displays */
 #define SEG_A                 PTD_PTD0
@@ -95,8 +99,8 @@ unsigned char Okey = FALSE;				// Flag boton OK del remoto
 unsigned char ModoTest = FALSE; 		// Flag Modo Test
 unsigned char ModoConfig = FALSE;		// Flag Modo Config
 unsigned char ReiniciarPartida = FALSE;	// Flag Restart Game
-unsigned char Timer3Seg = OFF;		// Flag que esta en "1" durante 3 segs
-unsigned char ContadorTimer3Seg = 0;
+unsigned char Timer5Seg = OFF;		// Flag que esta en "1" durante 5 segs
+unsigned char ContadorTimer5Seg = 0;
 unsigned char ContadorParpadeo = 0;
 unsigned char Hora = 12;
 unsigned char Minutos = 0;
@@ -104,12 +108,12 @@ unsigned char Segundos = 0;
 unsigned char Dia = 1;
 unsigned char Mes = 1;
 unsigned char Anio = 16;
-unsigned char EsBisiesto = FALSE;       // Flag anio bisiesto
-unsigned char TickParpadeo = 0;     // marca el parpadeo para los displays
-unsigned char ComandoIR = 129;      // Comando IR recibido (este valor inicial es para evitar lecturas espureas)
-unsigned int  AnchoDePulso;         // lapso de tiempo capturado por TIM1
+unsigned char EsBisiesto = FALSE;
+unsigned char TickParpadeo = 0;     // Marca el parpadeo de 500ms para los displays
+unsigned char ComandoIR = 129;      // Comando IR recibido (valor inicial para evitar lecturas espureas)
+unsigned int  AnchoDePulso;         // Lapso de tiempo capturado por TIM1
 unsigned char Comando = 0;          // Primeros 7 bits de la trama SIRC
-unsigned char BitTrama = 0;         // Contador de bits recibidos
+unsigned char BitTrama = 0;         // Contador de bits recibidos trama SIRC
 unsigned char i, j;                 // para los bucles for() de las ISR
 
 /** ---------------- Seccion inicializacion de modulos ------------------ **/
@@ -147,7 +151,7 @@ void inicializaPLL(void)
   PCTL_BCS = 1;       // cambio a frecuencia del PLL
 }
 
-void habilitaLCDyDisplays(void)
+void habilitaDisplays(void)
 /** Configura los pines compartidos por el LCD y los 4 displays del Edukit **/
 {
 /** --------------------------------------
@@ -210,9 +214,9 @@ void habilitaGuionY2Puntos(void)
 /** Habilita los Led de proposito general del Edukit y los inicializa apagados **/
 {
   /* LD2 (activo alto) */
-  DDRA_DDRA2 = OUTPUT; GUION = OFF;
+  DDRA_DDRA2 = OUTPUT; ApagaGuion;
   /* LD10 (activo bajo) */
-  DDRB_DDRB0 = OUTPUT; DOS_PUNTOS = 1; 
+  DDRB_DDRB0 = OUTPUT; Apaga2Puntos; 
 }
 
 void inicializaKBI(void)
@@ -409,12 +413,9 @@ void apagaSegmentos(void)
 }
 
 void apagaDisplays(void)
-/** desactiva los cátodos de los 4 displays del Edukit **/
+/** desactiva los catodos de los 4 displays del Edukit **/
 {
-  DISPLAY_1 = OFF;
-  DISPLAY_2 = OFF;
-  DISPLAY_3 = OFF;
-  DISPLAY_4 = OFF;
+  DISPLAY_1 = DISPLAY_2 = DISPLAY_3 = DISPLAY_4 = OFF;
 }
 
 void activaDisplay(unsigned char display)
@@ -441,25 +442,30 @@ void activaDisplay(unsigned char display)
 }
 
 void formateaNumero2Digitos(unsigned char numero, unsigned char displays)
-/** separa el numero recibido en 4 digitos para mostrarlo en los displays del Edukit **/
+/** separa el numero recibido en 2 digitos para mostrarlo en los displays **/
 {
 	// Displays 1 y 2: [ ][ ][X][X]
 	if (displays == 12) {
 		Digitos[1] = numero % 10; // unidades
+		Digitos[1] = BCDa7seg(Digitos[1]);
 		Digitos[2] = numero / 10; // decenas
+		Digitos[2] = BCDa7seg(Digitos[2]);
 	}
 	// Displays 3 y 4: [X][X][ ][ ]
 	else {
 		Digitos[3] = numero % 10; // unidades
+		Digitos[3] = BCDa7seg(Digitos[3]);
 		Digitos[4] = numero / 10; // decenas
+		Digitos[4] = BCDa7seg(Digitos[4]);
 	}
 
 }
 
 void formateaNumero4Digitos(unsigned int numero)
-/** separa el numero recibido en 4 digitos para mostrarlo en los displays del Edukit **/
+/** separa el numero recibido en 4 digitos para mostrarlo en los displays **/
 {
   unsigned int aux;
+  unsigned char i;
 
   Digitos[4] = numero / 1000;   // unidades de mil
   aux = numero % 1000;
@@ -469,29 +475,17 @@ void formateaNumero4Digitos(unsigned int numero)
 
   Digitos[1] = Digitos[2] % 10; // unidades
   Digitos[2] = Digitos[2] / 10; // decenas
+
+  // guardo los numeros en formato 7 segmentos
+  for (i = 1; i <= 4; i++) {
+	Digitos[i] = BCDa7seg(Digitos[i]);
+  } 
 }
 
-void muestraCaracterEnDisplay(unsigned char valor)
-/** usada para mostrar caracteres personalizados **/
-{    
-    // escribo solo en los pines conectados al display
-    PTD_PTD0 = valor;
-    PTD_PTD1 = valor>>=1;
-    PTD_PTD2 = valor>>=1;
-    PTD_PTD3 = valor>>=1; 
-    PTA_PTA4 = valor>>=1;
-    PTA_PTA5 = valor>>=1;
-    PTA_PTA6 = valor>>=1;
-    PTA_PTA7 = valor>>1;
-}
-
-void muestraNumeroEnDisplay(unsigned char numero, unsigned char puntoDecimal)
-/** muestra el número recibido en algun display del Edukit **/
-/** puntoDecimal = (OFF, ON)  **/
+void muestraEnDisplay(unsigned char dato7Seg)
+/** muestra el parametro recibido en algun display **/
 {
-    unsigned char dato7Seg = BCDa7seg(numero); 
-    
-    // escribo sólo en los pines conectados al display
+    // escribo solamente en los pines conectados al display
     PTD_PTD0 = dato7Seg;
     PTD_PTD1 = dato7Seg>>=1;
     PTD_PTD2 = dato7Seg>>=1;
@@ -500,13 +494,11 @@ void muestraNumeroEnDisplay(unsigned char numero, unsigned char puntoDecimal)
     PTA_PTA5 = dato7Seg>>=1;
     PTA_PTA6 = dato7Seg>>=1;
     PTA_PTA7 = dato7Seg>>1;
-
-    if (puntoDecimal) EnciendePuntoDecimal;
 }
 
 void muestraNumero2Digitos(unsigned char numero, unsigned char posicionPuntoDecimal, unsigned char displays, unsigned char parpadear)
 /** muestra el nro recibido en 2 displays del Edukit **/
-/** posicionPuntoDecimal = (0 -apagado-, 1, 2) **/
+/** posicionPuntoDecimal = (0 -apagado-, 1, 2, 3, 4) **/
 /** displays = (DISPLAYS_1_2, DISPLAYS_3_4) **/
 /** parpadear = (OFF, ON) **/
 {
@@ -530,7 +522,7 @@ void muestraNumero2Digitos(unsigned char numero, unsigned char posicionPuntoDeci
     
     // barrida de displays
     for (i = inicio; i <= fin; i++) {
-        muestraNumeroEnDisplay(Digitos[i], OFF);
+        muestraEnDisplay(Digitos[i]);
         activaDisplay(i);
         if (posicionPuntoDecimal == i) EnciendePuntoDecimal;
         demoraEnms(DEMORA_DISPLAY_MS);
@@ -553,7 +545,7 @@ void muestraNumero4Digitos(unsigned int numero, unsigned char posicionPuntoDecim
     formateaNumero4Digitos(numero);
 
     for (i = 1; i <= 4; i++) {
-        muestraNumeroEnDisplay(Digitos[i], OFF);
+        muestraEnDisplay(Digitos[i]);
         activaDisplay(i);
         if (posicionPuntoDecimal == i) EnciendePuntoDecimal;
         demoraEnms(DEMORA_DISPLAY_MS);
@@ -602,7 +594,7 @@ unsigned int convierteEnTemp(unsigned int valor, unsigned char escala)
       return convierteEnmV(valor);
 }
 
-/** ----------------- Funciones del tanteador ------------------ **/
+/** ----------------- Funciones propias del tanteador ------------------ **/
 
 void limpiaFlagsGlobales(void)
 /** Apaga los todos los flags de los botones **/
@@ -612,39 +604,207 @@ void limpiaFlagsGlobales(void)
 	P2mas = 	FALSE;	// Flag P2+
 	P2menos = 	FALSE;	// Flag P2-
 	Okey = 		FALSE;	// Flag boton OK del remoto
+	ModoTest = FALSE;
+	ModoConfig = FALSE;
+	ReiniciarPartida = FALSE;
 }
 
 void modoTest(void)
-/** enciende TODOS los segmentos en los 4 Displays **/
-// TODO: encender GUION y DOS_PUNTOS
+/** enciende TODOS los Leds (Juarez) **/
 {
-    unsigned char i;
-    Digitos[1]=8;
-    Digitos[2]=8;
-    Digitos[3]=8;
-    Digitos[4]=8;
+    
+    EnciendeGuion;		// activo alto
+    Enciende2Puntos;	// activo bajo 
 
-    // barro los displays para mostrar el mumero
+    muestraEnDisplay(0xFF);		// activo todos los segmentos incluido el dp 
+    DISPLAY_1 = DISPLAY_2 = DISPLAY_3 = DISPLAY_4 = ON;	// enciendo los 4 diplays
+
+    demoraEnms(DEMORA_DISPLAY_MS);
+
     apagaDisplays();
+    ApagaGuion;		// activo alto
+	  Apaga2Puntos;	// activo bajo 
 
-    for (i = 1; i <= 4; i++)
-    {
-      muestraNumeroEnDisplay(Digitos[i], ON);
-      activaDisplay(i);
-      // dejo encendido el display un instante para persistencia visual
-      demoraEnms(DEMORA_DISPLAY_MS);
+}
+
+void walk(unsigned char sentido)
+/** hace un barrido rapido de los displays para mostrar/ocultar el numero **/
+/** sentido = 0 (INPUT)  barre de izquierda a derecha mostrando el numero **/
+/** sentido = 1 (OUTPUT) barre de derecha a izquierda ocultando el numero **/
+/** IMPORTANTE: verificar el contenido de Digitos[] antes de llamar a esta funcion (!) **/
+{
+	unsigned char cont;
+
+	if (sentido == INPUT)
+	  cont = 1;
+	else
+	  cont = 42;	// equivale a 400 ms aprox
+
+	while(cont) {
+	
+		muestraEnDisplay(Digitos[4]);
+		activaDisplay(4);                   
+		demoraEnms(DEMORA_DISPLAY_MS);
+		DISPLAY_4 = OFF;  // apago para evitar la escritura anticipada
+
+		// ~100 ms
+		if (cont > 20) { 
+			muestraEnDisplay(Digitos[3]);
+			activaDisplay(3);                       
+			demoraEnms(DEMORA_DISPLAY_MS);
+			DISPLAY_3 = OFF;                
+		}
+
+		// ~200 ms
+		if (cont > 30) {
+			muestraEnDisplay(Digitos[2]);
+			activaDisplay(2);
+			demoraEnms(DEMORA_DISPLAY_MS);
+			DISPLAY_2 = OFF;
+		}
+
+		// ~300 ms
+		if (cont > 37) {
+			muestraEnDisplay(Digitos[1]);
+			activaDisplay(1);
+			demoraEnms(DEMORA_DISPLAY_MS);
+			DISPLAY_1 = OFF;
+		}
+
+		// ~400 ms
+		if (cont > 42)
+			break;
+
+		(sentido == INPUT) ? cont++ : cont--;
+	}
+  
+  // solamente en el walkout
+  apagaDisplays();
+}
+
+void modoIntro(void)
+/** Mensaje introductorio (Bejarano) **/
+{
+	unsigned int cont = 0;
+	unsigned char H = 4, O = 3, L = 2, A = 1;        
+
+
+	for(;;) {
+		
+		muestraEnDisplay(0x76); // H
+		activaDisplay(H);                   
+		demoraEnms(DEMORA_DISPLAY_MS);
+
+		if (cont > 50) { 
+			muestraEnDisplay(0x3F); // O
+			activaDisplay(O);                       
+			demoraEnms(DEMORA_DISPLAY_MS);                
+		}
+
+		if (cont > 75) {
+			muestraEnDisplay(0x38); // L
+			activaDisplay(L);
+			demoraEnms(DEMORA_DISPLAY_MS);
+		}
+
+		if (cont > 100) {
+			muestraEnDisplay(0x77); // A
+			activaDisplay(A);
+			demoraEnms(DEMORA_DISPLAY_MS);
+		}
+
+		// DESPLAZA A LA DERECHA
+		if (cont == 200) {
+			H = 3;
+			O = 2;
+			L = 1;
+			A = 0;
+		}
+
+		if (cont == 225) {
+			H = 2;
+			O = 1;
+			L = 0;
+		}
+    
+		if (cont == 250) {
+			H = 1;
+			O = 0;
+		}
+
+		if(cont==275) {  
+			H = 0;
+			break;
+		}
+  
+  		cont++;
+	}
+}
+
+void muestraModoConfig(unsigned char puntos)
+/** muestra el tope de la partida (Juarez) **/
+{  
+    muestraEnDisplay(0x39); // P
+    activaDisplay(4);
+    demoraEnms(DEMORA_DISPLAY_MS);
+    muestraEnDisplay(0x73); // C
+    activaDisplay(3);
+    demoraEnms(DEMORA_DISPLAY_MS);
+    muestraEnDisplay(BCDa7seg(puntos/10));
+    activaDisplay(2);
+    demoraEnms(DEMORA_DISPLAY_MS);
+    muestraEnDisplay(BCDa7seg(puntos%10));
+    activaDisplay(1);
+    demoraEnms(DEMORA_DISPLAY_MS);
+}  
+
+unsigned char modoConfig(void)
+/** Setea el tope de la partida (por Juarez) **/
+{
+    unsigned char numero = 0, pulso = 0;
+
+    while(1){
+    	
+        //Modo Test
+        if(ModoTest) {
+        	ModoTest = FALSE;
+        	while(Timer5Seg) modoTest();
+        }
+      
+    	// P1+
+        if(P1mas) {
+        	P1mas = FALSE;
+        	pulso++;
+        }   
+  
+        //P1 limite
+        if(pulso == 4) pulso = 0;
+         
+        //P1-  Retorno al modo play
+        if(P1menos) {
+            limpiaFlagsGlobales();
+            pulso = 0;
+            demoraEnms(150);
+            return (numero);
+        }
+
+        if(pulso == 0) numero = 5;
+        if(pulso == 1) numero = 7;
+        if(pulso == 2) numero = 14;
+        if(pulso == 3) numero = 21;
+
+        muestraModoConfig(numero);
     }
-    apagaDisplays();
 }
 
 void configuraFechaHora(void)
 /** Setea los valores iniciales de Fecha/Hora **/
 {
   TBCR_TBIE = OFF; 	// Deshabilito temporalmente las interrupciones por TBM
-  DOS_PUNTOS = 1;   // apagado (activo bajo)
-  GUION = OFF;      // apagado (activo alto)
+  ApagaGuion;
+  Apaga2Puntos;
 
-  // configuro el año (parpadea hasta que el usuario confirme)  
+  // seteo el anio (parpadeando hasta que el usuario confirme)  
   while(1) {
 
     muestraNumero4Digitos((2000 + Anio), OFF, ON);
@@ -675,8 +835,9 @@ void configuraFechaHora(void)
   	EsBisiesto = FALSE;
 
   limpiaFlagsGlobales();
-  GUION = ON; // para indicar que estoy configurando fecha 
-  // configuro el mes (parpadea hasta que el usuario confirme)
+  EnciendeGuion; // para indicar que estoy configurando fecha 
+  
+  // seteo el mes (parpadeando hasta que el usuario confirme)
   while(1) {
 
     muestraNumero2Digitos(Mes, OFF, DISPLAYS_1_2, ON);
@@ -702,7 +863,8 @@ void configuraFechaHora(void)
   }
   
   limpiaFlagsGlobales();
-  // configuro el dia (parpadea hasta que el usuario confirme)  
+  
+  // seteo el dia (parpadeando hasta que el usuario confirme)  
   while(1) {
 
     muestraNumero2Digitos(Dia, OFF, DISPLAYS_3_4, ON);
@@ -755,10 +917,11 @@ void configuraFechaHora(void)
     } 
   }
 
-  GUION = OFF;
-  DOS_PUNTOS = 0; // para indicar que configuro hora (activo bajo)
+  ApagaGuion;
+  Enciende2Puntos;	// para indicar que estoy seteando la hora
   limpiaFlagsGlobales();  
-  // Configuro Hora (parpadea hora hasta que el usuario confirme)
+  
+  // seteo Hora (parpadeando hasta que el usuario confirme)
   while(1) {
 
     muestraNumero2Digitos(Hora, OFF, DISPLAYS_3_4, ON);
@@ -784,7 +947,8 @@ void configuraFechaHora(void)
   }
 
   limpiaFlagsGlobales();
-  // parpadea minutos hasta que el usuario confirme
+  
+  // seteo minutos (parpadeando hasta que el usuario confirme)
   while(1) {
   	muestraNumero2Digitos(Minutos, OFF, DISPLAYS_1_2, ON);
 
@@ -809,8 +973,9 @@ void configuraFechaHora(void)
   }
 
   limpiaFlagsGlobales();
-  Segundos = 0;		// empieza a contar desde ahora
-  TBCR_TBIE = ON;	// habilito nuevamente las interrupciones por TBM 	
+  Apaga2Puntos;
+  Segundos = 0;		    // empieza a contar desde ahora
+  TBCR_TBIE = ON;	    // habilito nuevamente las interrupciones por TBM
 }
 
 /** ----------- Seccion de funciones de atencion de interrupcion (ISR) --------- **/
@@ -827,14 +992,14 @@ void interrupt irqTIM2OF(void)
       }
     } 
 
-  // para el timer de 3 segundos
-  if (Timer3Seg) {
-    if (ContadorTimer3Seg == 30) {
-      ContadorTimer3Seg = 0;
-      Timer3Seg = OFF;
+  // para el timer de 5 segundos
+  if (Timer5Seg) {
+    if (ContadorTimer5Seg == 50) {
+      ContadorTimer5Seg = 0;
+      Timer5Seg = OFF;
     }
     else
-      ContadorTimer3Seg++;
+      ContadorTimer5Seg++;
   }
 
   // para el parpadeo de los displays c/ 500 mseg
@@ -845,7 +1010,7 @@ void interrupt irqTIM2OF(void)
   else 
     ContadorParpadeo++;
 
-  T2SC_TOF=0;   // interrupcion atendida
+  T2SC_TOF = 0;   // interrupcion atendida
 }
 
 void interrupt irqPulsadores(void)
@@ -865,7 +1030,7 @@ void interrupt irqPulsadores(void)
           // Modo Test (P2+ y P2-)
           if (!KBIER_KBIE5 & !KBIER_KBIE4) {
             ModoTest = TRUE;   // seteo la variable global
-            Timer3Seg = ON; // "arranco" el timer de 3 segundos
+            Timer5Seg = ON; // "arranco" el timer de 5 segundos
           }   
 
           // Reiniciar partida (P1+ y P2+)
@@ -963,12 +1128,12 @@ void interrupt irqTBM(void)
 void interrupt irqTIM1OF(void)
 /**  Reestablece el timer por overflow **/
 {
-  T1SC_TOF = 0;   // Limpio el TIM Overflow Flag Bit 
-  T1SC_TRST = 1;  // Limpio el Prescaler y el contador del TIM
+  T1SC_TOF = 0;   // Limpio Flag TIM Overflow 
+  T1SC_TRST = 1;  // Limpio Prescaler y contador del Timer1
 }
 
 void interrupt irqTIM1CH0(void)
-/** Manejo del control remoto IR **/
+/** Manejo del control remoto IR (por Ramos) **/
 {
   if (SENSOR_IR == 0)          // Flanco de bajada (recordar que el receptor invierte la señal!)
       T1SC_TRST = 1;          // limpio el contador para medir el ancho del pulso
@@ -999,6 +1164,10 @@ void interrupt irqTIM1CH0(void)
   if (BitTrama >= 7) ComandoIR = Comando;  // si recibi al menos 7 bits guardo el comando
 
   // la logica del manejo de botones (Facundo)
+  // setear flag del boton presionado
+  // setear flag timer1seg
+  // enmascarar T1SC0_CH0IE = 0;
+  
 
 
   T1SC0_CH0F=0;   // interrupcion atendida

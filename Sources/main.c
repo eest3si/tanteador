@@ -3,142 +3,161 @@
 #include "tanteador.h"
 
 /*-------------Prototipos------------*/
-
-void muestraModoConfig(unsigned char);
-unsigned char modoConfig(void);
 void modoPlay(unsigned char);
+void modoInfo(unsigned char);
 
 /**-------------Main-------------**/
 
-void main(void){
-    unsigned char pepe;                              
+void main(void) {                          
     
     configuraCPU();
+    //inicializaPLL();
     habilitaPulsadores();
     inicializaKBI();
-    habilitaLCDyDisplays();
-    habilitaGuionY2Puntos();
+    habilitaDisplays();
+    habilitaGuionY2Puntos();// Guion: PTA2, 2puntos: PTB0 
     inicializaTIM1();       // Input-capture para el control remoto IR
     inicializaTIM2();       // base de tiempo de 100 ms
     configuraADC();         // para el sensor de temperatura (ADCH3/PTA3)
     HabilitarSensorIR;      // conectado a TIM1CH0/PTB4 
     EnableInterrupts;
-  
+    
     for(;;){
-    	// mensaje introductorio (Bejarano)
+    
+    	modoIntro();
     	configuraFechaHora();
     	// menu principal (Carbajal)
     	
-        pepe=modoConfig();
-     
-        modoPlay(pepe+1);
+      modoPlay(modoConfig());
+
     } /* loop forever */
 } /* fin main */
 
 /** --------- Seccion de funciones -------------- **/
 
-void modoPlay(unsigned char modoConfig){
-    char player1=0;
-    char player2=0;
-    unsigned int numero=0;
+void modoPlay(unsigned char topePartida)
+/** version inicial por Bourgez **/
+/** manejo del empate por Torres **/
+{
+      
+    char player1 = 0, player2 = 0;
+    unsigned char LastSt = 0, empate = 0;  
+    unsigned int numero = 0;
   
-    while(1){
-        numero=player1*100+player2;               
-        muestraNumero4Digitos(numero, OFF, OFF);
+    while(1) {
+
+        // manejo de la ventaja
+        if(player1 >= (topePartida-1) && player2 >= (topePartida-1)) {
+
+            empate = topePartida - 1; 
+    
+            // P2 tenia la ventaja y P1 se la saca
+            if(LastSt == 2)
+                if(player1 < topePartida && player2 >= topePartida) {
+                    LastSt = 1;
+                    player2 = empate;
+                }
+            
+            // P1 tenia la ventaja y P2 se la saca
+            if(LastSt == 1)
+                if(player1 >= topePartida && player2 < topePartida) {
+                    LastSt = 2;
+                    player1 = empate;
+                }
+            
+            // ventaja P1
+            if(player1 >= topePartida && player2 < topePartida)
+                LastSt = 1;
+            
+            if(LastSt == 1) {
+                numero = empate*100 + empate; 
+                muestraNumero4Digitos(numero, 3, OFF);
+                player2 = empate;  
+            }
+               
+            // ventaja P2
+            if(player2 >= topePartida)
+                LastSt = 2;
+
+            if (LastSt == 2) {
+                numero = empate*100 + empate; 
+                muestraNumero4Digitos(numero, 1, OFF);
+                player1 = empate;  
+            } 
+               
+            // ventaja iguales
+            if(player1 == empate || player2 == empate ) {
+                numero = empate*100 + empate;
+                muestraNumero4Digitos(numero, OFF, OFF);  
+            }
+                 
+        } else {
+            numero = player1*100 + player2;
+            muestraNumero4Digitos(numero, OFF, OFF);  
+        }
                 
-		//ModoConfig
-	   
+		  //ModoConfig (P1- y P2-)	   
 	   	if(ModoConfig) {
-	   		ModoConfig = OFF;	// limpio flag
+	   		limpiaFlagsGlobales();
 	   		break;
 	   	}
 	   
-	    //RESET SCORE
+	    //RESET SCORE (P1+ y P2+)
 	  	if(ReiniciarPartida) {
-	    	ReiniciarPartida = OFF;	// limpio flag
-	    	player2=0;
-	    	player1=0;
+	    	limpiaFlagsGlobales();
+	    	player2 = 0;
+	    	player1 = 0;
 	    }
 	 
 		if(P1mas) {
-			P1mas = OFF;	// limpio flag
+			P1mas = FALSE;
 			player1++;
 		}
 
 	    if(P1menos) {
-	    	P1menos = OFF;	// limpio flag
+	    	P1menos = FALSE;
 	    	if(player1>0) player1--;
 	    }
 
 	    if(P2mas) {
-	    	P2mas = OFF;	// limpio flag
+	    	P2mas = FALSE;
 	    	player2++;
 	    }
 
 	    if(P2menos) {
-	    	P2menos = OFF;	// limpio flag
+	    	P2menos = FALSE;
 	    	if(player2>0) player2--;
 	    }
 
-	    if (player1==modoConfig) break;
-
-	    if (player2==modoConfig) break; 
+	    // fin de la partida
+        if (player1 == topePartida || player2 == topePartida){
+	      limpiaFlagsGlobales();
+	      break;
+	    }
     }
 }
 
+void modoInfo(unsigned char exit) {
+/** muestra hora, fecha y temperatura ciclicamente cada 5 seg **/
+/** por Juarez **/
+// 5 sec muestraHora(); muestraFecha(); muestraTemperatura();
+unsigned int cont=0;
+ 
+while(!exit){
+demoraEnms(10);
+cont++;
 
-unsigned char modoConfig(void){
+  if(cont>0 && cont<500){
+  muestraHora();
+  }
+  if(cont>500 && cont<1000){
+  muetraFecha();
+  }
+  if(cont>1000 && cont<1500){
+  muestraTemperatura();
+  }
 
-    unsigned char numero=0, pulso=0;
-
-    while(1){
-    	//Modo Test
-        if(ModoTest) {
-        	ModoTest = OFF;	// limpio flag
-        	while(Timer3Seg) modoTest();
-        }
-      
-    	// P1+
-        if(P1mas) {
-        	P1mas = OFF;	// limpio flag
-        	pulso++;
-        }   
-  
-        //P1 limite
-        if(pulso==4) pulso=0;
-  
-        
-        if(P1menos) {              //P1-  Retorno del modo de juego
-            P1menos = OFF;	// limpio flag
-            pulso=0;
-            demoraEnms(150);
-            return (numero);
-        }
-
-        if(pulso==0) numero=5;
-        if(pulso==1) numero=7;
-        if(pulso==2) numero=14;
-        if(pulso==3) numero=21;
-
-        muestraModoConfig(numero);
-
-    }
 }
 
-void muestraModoConfig(unsigned char puntos){
-  
-    muestraCaracterEnDisplay(0x39);
-    activaDisplay(4);
-    demoraEnms(DEMORA_DISPLAY_MS);
-    muestraCaracterEnDisplay(0x73);
-    activaDisplay(3);
-    demoraEnms(DEMORA_DISPLAY_MS);
-    muestraNumeroEnDisplay(puntos/10, OFF);
-    activaDisplay(2);
-    demoraEnms(DEMORA_DISPLAY_MS);
-    muestraNumeroEnDisplay(puntos%10, OFF);
-    activaDisplay(1);
-    demoraEnms(DEMORA_DISPLAY_MS);
-            
-}  
-/* Fin ModoConfig */
+
+}
