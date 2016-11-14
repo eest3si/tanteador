@@ -6,12 +6,13 @@
 
 void muestraModoConfig(unsigned char);
 unsigned char modoConfig(void);
-void modoPlay(unsigned char);
+unsigned char modoPlay(unsigned char);
+unsigned char ModoMenu(unsigned char );
 
 /**-------------Main-------------**/
 
 void main(void){
-    unsigned char pepe;                              
+    unsigned char pepe,A;                              
     
     configuraCPU();
     habilitaPulsadores();
@@ -24,20 +25,26 @@ void main(void){
     HabilitarSensorIR;      // conectado a TIM1CH0/PTB4 
     EnableInterrupts;
   
+      configuraFechaHora();
     for(;;){
-    	// mensaje introductorio (Bejarano)
-    	configuraFechaHora();
-    	// menu principal (Carbajal)
+    	// mensaje introductorio (Bejarano) 	 
     	
+    	
+    	// menu principal (Carbajal)
+    	 
+        ModoMenu(A);
+ 
+  
         pepe=modoConfig();
      
-        modoPlay(pepe+1);
+        A = modoPlay(pepe+1);
+    
     } /* loop forever */
 } /* fin main */
 
 /** --------- Seccion de funciones -------------- **/
 
-void modoPlay(unsigned char modoConfig){
+unsigned char modoPlay(unsigned char modoConfig){
     char player1=0;
     char player2=0;
     unsigned int numero=0;
@@ -142,3 +149,70 @@ void muestraModoConfig(unsigned char puntos){
             
 }  
 /* Fin ModoConfig */
+
+unsigned char ModoMenu(unsigned char A) {
+
+unsigned char pulso=0;
+
+  while(1){
+    
+         if(P1mas) {
+        	P1mas = OFF;	
+        	pulso++;
+         }
+        	
+        	if (pulso>=2){  
+          pulso=0;
+        } 
+        
+         
+         
+  if(pulso==0){
+    
+    muestraCaracterEnDisplay(0x73);
+    activaDisplay(4);
+    demoraEnms(DEMORA_DISPLAY_MS);
+    muestraCaracterEnDisplay(0x73);
+    activaDisplay(3);
+    demoraEnms(DEMORA_DISPLAY_MS);
+    muestraCaracterEnDisplay(OFF);
+    activaDisplay(2);
+    demoraEnms(DEMORA_DISPLAY_MS);
+    muestraCaracterEnDisplay(OFF);
+    activaDisplay(1);
+    demoraEnms(DEMORA_DISPLAY_MS);
+  }
+  
+  if(P1menos){
+   P1menos = OFF;
+   
+  return A;
+    
+  }
+  
+   
+    if (pulso==1){
+      
+    muestraNumeroEnDisplay(1,OFF);
+    activaDisplay(4);
+    demoraEnms(DEMORA_DISPLAY_MS);
+    muestraCaracterEnDisplay(0x54);
+    activaDisplay(3);
+    demoraEnms(DEMORA_DISPLAY_MS);
+    muestraCaracterEnDisplay(0x71);
+    activaDisplay(2);
+    demoraEnms(DEMORA_DISPLAY_MS);
+    muestraCaracterEnDisplay(0x5C);
+    activaDisplay(1);
+    demoraEnms(DEMORA_DISPLAY_MS);
+    }
+   
+    if(P1menos){     
+    P1menos = OFF;   
+    
+    configuraFechaHora();
+      
+    }
+    
+}
+}
