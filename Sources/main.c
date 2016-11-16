@@ -18,7 +18,7 @@ void main(void){
     habilitaPulsadores();
     inicializaKBI();
     habilitaDisplays();
-    habilitaGuionY2Puntos();// Guion: PTA2, 2puntos: PTB0 
+    habilitaGuionY2Puntos();// Guion: PTA2, 2Puntos: PTB0 
     inicializaTIM1();       // Input-capture para el control remoto IR
     inicializaTIM2();       // base de tiempo de 100 ms
     configuraADC();         // para el sensor de temperatura (ADCH3/PTA3)
@@ -149,42 +149,28 @@ unsigned char modoMenu(void)
 /** permite elegir entre "modo play" y "modo info" **/
 /** va al modo info tras 1 minuto de inactividad **/
 {
-    unsigned char pulso = 0;
+    unsigned char pulso = 2;
     
-    //Timer1Min = ON;
-    //while(Timer1Min) // lo reestablece la ISR
+    Timer1Min = ON;
+    
+    // lo reestablece la ISR
+    while(Timer1Min) {
 
-    while(TRUE) {
-
-        if (P1mas) {
-        	P1mas = OFF;	
-        	pulso++;
-          //ContadorTimer1Min = 0;  // reseteo el timeout por inactividad
-        }
-
-        if (pulso >= 2)
-            pulso=0;
+        if (pulso > 2)
+            pulso = 1;
 
         // modo play (muestra PP)
-        if (pulso == 0) {
+        if (pulso == 2) {
             muestraEnDisplay(0x73); // P
             activaDisplay(4);
             demoraEnms(DEMORA_DISPLAY_MS);
             activaDisplay(3);
-            demoraEnms(DEMORA_DISPLAY_MS);
-
-            // confirmacion del usuario
-            if (P1menos) {
-                limpiaFlagsGlobales();
-                //Timer1Min = OFF;
-                //ContadorTimer1Min = 0;
-                return TRUE;
-            }
+            demoraEnms(DEMORA_DISPLAY_MS);            
         }
 
         // modo info
         if (pulso == 1) {
-            muestraEnDisplay(0x06);         // I
+            muestraEnDisplay(0x06); // I
             activaDisplay(4);
             demoraEnms(DEMORA_DISPLAY_MS);
             DISPLAY_4 = OFF;
@@ -203,13 +189,24 @@ unsigned char modoMenu(void)
             activaDisplay(1);
             demoraEnms(DEMORA_DISPLAY_MS);
             DISPLAY_1 = OFF;
+        }
 
-            if (P1menos) {     
-                limpiaFlagsGlobales();
-                //Timer1Min = OFF;
-                //ContadorTimer1Min = 0;
+        if (P1mas) {
+        	P1mas = OFF;	
+        	pulso++;
+          ContadorTimer1Min = 0;  // reinicio el timeout por inactividad
+        }
+
+        // confirmacion del usuario
+        if (P1menos) {     
+            limpiaFlagsGlobales();
+            Timer1Min = OFF;        // apago el flag del timer
+            ContadorTimer1Min = 0;  // reinicio el timeout por inactividad
+            
+            if (pulso == 1)
                 return FALSE;
-            }
+            if (pulso == 2)
+                return TRUE;
         }
     }
     // salgo por timeout (va al modo Info)
@@ -220,6 +217,7 @@ void modoInfo(unsigned char exit) {
 /** muestra hora, fecha y temperatura ciclicamente cada 5 seg **/
 /** por Juarez **/
 // 5 sec muestraHora(); muestraFecha(); muestraTemperatura();
+// cualquier tecla lo saca de este modo y va al menu ppal
 unsigned int cont=0;
  
 while(!exit){

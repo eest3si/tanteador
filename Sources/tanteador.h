@@ -2,8 +2,8 @@
 **    LIBRERIA DE FUNCIONES PARA EL PROYECTO TANTEADOR DE PING-PONG
 **
 **     Archivo    : tanteador.h
-**     Version    : 1.7
-**     Fecha      : 20161113
+**     Version    : 1.7.1
+**     Fecha      : 20161115
 **     Micro      : MC68HC908AP8CFB (44 pines)
 **     Autores    : 6to 1ra (A) 2016
 **
@@ -869,7 +869,8 @@ void configuraFechaHora(void)
   // seteo el dia (parpadeando hasta que el usuario confirme)  
   while(1) {
 
-    muestraNumero2Digitos(Dia, OFF, DISPLAYS_3_4, ON);
+    muestraNumero2Digitos(Mes, OFF, DISPLAYS_1_2, OFF); // fijo
+    muestraNumero2Digitos(Dia, OFF, DISPLAYS_3_4, ON);  // parpadeando
 
     // incremento dia
     if (P1mas) {
@@ -952,7 +953,9 @@ void configuraFechaHora(void)
   
   // seteo minutos (parpadeando hasta que el usuario confirme)
   while(1) {
-  	muestraNumero2Digitos(Minutos, OFF, DISPLAYS_1_2, ON);
+  	
+  	muestraNumero2Digitos(Hora, OFF, DISPLAYS_3_4, OFF);    // fijo
+  	muestraNumero2Digitos(Minutos, OFF, DISPLAYS_1_2, ON);  // parpadeando
 
   	// Incremento minutos
 	if (P1mas) {
@@ -1006,7 +1009,7 @@ void interrupt irqTIM2OF(void)
 
   // para el timer de 1 minuto (idle timeout)
   if (Timer1Min) {
-  	if (ContadorTimer1Min = 600) {
+  	if (ContadorTimer1Min == 600) {
   		ContadorTimer1Min = 0;
   		Timer1Min = OFF;
   	}
