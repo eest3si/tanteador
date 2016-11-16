@@ -6,6 +6,7 @@
 void modoPlay(unsigned char);
 void modoInfo(unsigned char);
 unsigned char modoMenu(void);
+void muestraFecha(unsigned char,unsigned char);
 
 /**-------------Main-------------**/
 
@@ -27,9 +28,10 @@ void main(void){
 
     modoIntro();
     configuraFechaHora();
-    
+   
     for(;;){
-    	// menu principal (Carbajal)   	 
+    	// menu principal (Carbajal)
+    	   	 
         opcion = modoMenu();
 
         if (opcion)
@@ -238,4 +240,14 @@ cont++;
   }
 */
 }
+}
+
+void muestraFecha(void){
+
+  unsigned int numero1;
+  
+  numero1=Dia*100+Mes;               
+  muestraNumero4Digitos(numero1, OFF, OFF);
+  GUION = ON;       //Habilito guion de fecha
+  DOS_PUNTOS = ON;  //Deshabilito Dos puntos de hora
 }
