@@ -25,7 +25,7 @@ _startupData is allocated at 0x8F5 and uses 6 Bytes
 extern struct _tagStartup {
   unsigned nofZeroOut     1
   _Range   pZeroOut       0x100     42
-  _Copy    *toCopyDownBeg 0x1256
+  _Copy    *toCopyDownBeg 0x12AD
 } _startupData;
 
 *********************************************************************************************
@@ -36,8 +36,8 @@ Section Name                    Size  Type     From       To       Segment
 .init                            149     R      0x860      0x8F4   ROM
 .startData                        14     R      0x8F5      0x902   ROM
 .rodata                           17     R      0x903      0x913   ROM
-.text                           2370     R      0x914     0x1255   ROM
-.copy                             11     R     0x1256     0x1260   ROM
+.text                           2457     R      0x914     0x12AC   ROM
+.copy                             11     R     0x12AD     0x12B7   ROM
 .abs_section_0                     1   N/I        0x0        0x0   .absSeg0
 .abs_section_1                     1   N/I        0x1        0x1   .absSeg1
 .abs_section_2                     1   N/I        0x2        0x2   .absSeg2
@@ -129,7 +129,7 @@ Section Name                    Size  Type     From       To       Segment
 .vectSeg85_vect                    2     R     0xFFFE     0xFFFF   .vectSeg85
 
 Summary of section sizes per section type:
-READ_ONLY (R):         A0D (dec:     2573)
+READ_ONLY (R):         A64 (dec:     2660)
 READ_WRITE (R/W):       7A (dec:      122)
 NO_INIT (N/I):          5B (dec:       91)
 
@@ -160,7 +160,7 @@ MODULE:                 -- main.c.o --
      inicializaTIM2                             971       A      10       1   .text       
      demora100us                                97B       9       9       1   .text       
      demora1ms                                  984       B      11       1   .text       
-     demoraEnms                                 98F      17      23       3   .text       
+     demoraEnms                                 98F      17      23       4   .text       
      BCDa7seg                                   9A6      36      54       5   .text       
      apagaDisplays                              9DC       9       9       5   .text       
      activaDisplay                              9E5      26      38       3   .text       
@@ -178,13 +178,13 @@ MODULE:                 -- main.c.o --
      irqTIM1OF                                 10CB       7       7       0   .text       
      irqTIM1CH0                                10D2      67     103       0   .text       
      main                                      1139      2F      47       1   .text       
-     muestraFecha                              1168      20      32       1   .text       
+     MuestraHora                               1168      77     119       1   .text       
 - VARIABLES:
      KBI_MASK                                   903       4       4       2   .rodata     
      DiasMeses                                  907       D      13       3   .rodata     
-     Hora                                       100       1       1      11   .data       
-     Dia                                        101       1       1      22   .data       
-     Mes                                        102       1       1      19   .data       
+     Hora                                       100       1       1      12   .data       
+     Dia                                        101       1       1      20   .data       
+     Mes                                        102       1       1      17   .data       
      Anio                                       103       1       1      10   .data       
      ComandoIR                                  104       1       1       1   .data       
      P1mas                                      105       1       1      10   .bss        
@@ -200,7 +200,7 @@ MODULE:                 -- main.c.o --
      Timer1Min                                  10F       1       1       2   .bss        
      ContadorTimer1Min                          110       2       2       5   .bss        
      ContadorParpadeo                           112       1       1       3   .bss        
-     Minutos                                    113       1       1      10   .bss        
+     Minutos                                    113       1       1      11   .bss        
      Segundos                                   114       1       1       4   .bss        
      EsBisiesto                                 115       1       1       6   .bss        
      TickParpadeo                               116       1       1       3   .bss        
@@ -214,18 +214,18 @@ MODULE:                 -- main.c.o --
      j                                          129       1       1       4   .common     
 MODULE:                 -- RTSHC08.C.o (ansii.lib) --
 - PROCEDURES:
-     _IDIVMOD                                  1188      69     105       2   .text       
-     _IDIVU                                    11F1      10      16       2   .text       
-     _IMODU                                    1201      15      21       2   .text       
-     _IDIVU_8                                  1216       C      12       1   .text       
-     _IMODU_8                                  1222      10      16       1   .text       
-     _Jump_Table_Header_Offset                 1232      24      36       3   .text       
+     _IDIVMOD                                  11DF      69     105       2   .text       
+     _IDIVU                                    1248      10      16       2   .text       
+     _IMODU                                    1258      15      21       2   .text       
+     _IDIVU_8                                  126D       C      12       1   .text       
+     _IMODU_8                                  1279      10      16       1   .text       
+     _Jump_Table_Header_Offset                 1289      24      36       3   .text       
 - VARIABLES:
 MODULE:                 -- MC68HC908AP32.C.o --
 - PROCEDURES:
 - VARIABLES:
      _PTA                                         0       1       1      15   .abs_section_0
-     _PTB                                         1       1       1      12   .abs_section_1
+     _PTB                                         1       1       1      13   .abs_section_1
      _PTC                                         2       1       1       4   .abs_section_2
      _PTD                                         3       1       1      12   .abs_section_3
      _DDRA                                        4       1       1       5   .abs_section_4
@@ -318,7 +318,7 @@ MODULE:                 -- Start08.c.o --
 MODULE STATISTIC
   Name                                      Data   Code  Const
 ---------------------------------------------------------------------------------------------
-  main.c.o                                    42   2164     17
+  main.c.o                                    42   2251     17
   RTSHC08.C.o (ansii.lib)                      0    206      0
   MC68HC908AP32.C.o                           91      0      0
   Start08.c.o                                  0    149      0
@@ -334,7 +334,7 @@ SECTION: ".text"
   formateaNumero2Digitos formateaNumero4Digitos muestraEnDisplay 
   muestraNumero2Digitos muestraNumero4Digitos limpiaFlagsGlobales modoIntro 
   configuraFechaHora irqTIM2OF irqPulsadores irqTBM irqTIM1OF irqTIM1CH0 main 
-  muestraFecha _IDIVMOD _IDIVU _IMODU _IDIVU_8 _IMODU_8 
+  MuestraHora _IDIVMOD _IDIVU _IMODU _IDIVU_8 _IMODU_8 
   _Jump_Table_Header_Offset 
 SECTION: ".data"
   Hora Dia Mes Anio ComandoIR 
@@ -514,7 +514,7 @@ OBJECT LIST SORTED BY ADDRESS
      Name                                      Addr   hSize   dSize     Ref    Section   RLIB
 ---------------------------------------------------------------------------------------------
      _PTA                                         0       1       1      15   .abs_section_0
-     _PTB                                         1       1       1      12   .abs_section_1
+     _PTB                                         1       1       1      13   .abs_section_1
      _PTC                                         2       1       1       4   .abs_section_2
      _PTD                                         3       1       1      12   .abs_section_3
      _DDRA                                        4       1       1       5   .abs_section_4
@@ -581,9 +581,9 @@ OBJECT LIST SORTED BY ADDRESS
      _ADR2L                                      5C       1       1       0   .abs_section_5c
      _ADR3L                                      5D       1       1       0   .abs_section_5d
      _ADASCR                                     5E       1       1       1   .abs_section_5e
-     Hora                                       100       1       1      11   .data       
-     Dia                                        101       1       1      22   .data       
-     Mes                                        102       1       1      19   .data       
+     Hora                                       100       1       1      12   .data       
+     Dia                                        101       1       1      20   .data       
+     Mes                                        102       1       1      17   .data       
      Anio                                       103       1       1      10   .data       
      ComandoIR                                  104       1       1       1   .data       
      P1mas                                      105       1       1      10   .bss        
@@ -599,7 +599,7 @@ OBJECT LIST SORTED BY ADDRESS
      Timer1Min                                  10F       1       1       2   .bss        
      ContadorTimer1Min                          110       2       2       5   .bss        
      ContadorParpadeo                           112       1       1       3   .bss        
-     Minutos                                    113       1       1      10   .bss        
+     Minutos                                    113       1       1      11   .bss        
      Segundos                                   114       1       1       4   .bss        
      EsBisiesto                                 115       1       1       6   .bss        
      TickParpadeo                               116       1       1       3   .bss        
@@ -626,7 +626,7 @@ OBJECT LIST SORTED BY ADDRESS
      inicializaTIM2                             971       A      10       1   .text       
      demora100us                                97B       9       9       1   .text       
      demora1ms                                  984       B      11       1   .text       
-     demoraEnms                                 98F      17      23       3   .text       
+     demoraEnms                                 98F      17      23       4   .text       
      BCDa7seg                                   9A6      36      54       5   .text       
      apagaDisplays                              9DC       9       9       5   .text       
      activaDisplay                              9E5      26      38       3   .text       
@@ -644,13 +644,13 @@ OBJECT LIST SORTED BY ADDRESS
      irqTIM1OF                                 10CB       7       7       0   .text       
      irqTIM1CH0                                10D2      67     103       0   .text       
      main                                      1139      2F      47       1   .text       
-     muestraFecha                              1168      20      32       1   .text       
-     _IDIVMOD                                  1188      69     105       2   .text       
-     _IDIVU                                    11F1      10      16       2   .text       
-     _IMODU                                    1201      15      21       2   .text       
-     _IDIVU_8                                  1216       C      12       1   .text       
-     _IMODU_8                                  1222      10      16       1   .text       
-     _Jump_Table_Header_Offset                 1232      24      36       3   .text       
+     MuestraHora                               1168      77     119       1   .text       
+     _IDIVMOD                                  11DF      69     105       2   .text       
+     _IDIVU                                    1248      10      16       2   .text       
+     _IMODU                                    1258      15      21       2   .text       
+     _IDIVU_8                                  126D       C      12       1   .text       
+     _IMODU_8                                  1279      10      16       1   .text       
+     _Jump_Table_Header_Offset                 1289      24      36       3   .text       
      _SBSR                                     FE00       1       1       0   .abs_section_fe00
      _SRSR                                     FE01       1       1       0   .abs_section_fe01
      _SBFCR                                    FE03       1       1       0   .abs_section_fe03
@@ -671,7 +671,7 @@ NOT USED PROCEDURES
 main.c.o:
   inicializaPLL demora1us demoraEnus demoraEns hexa7seg apagaSegmentos 
   lecturaAD convierteEnmV convierteEnTemp modoTest walk muestraModoConfig 
-  modoConfig modoPlay modoMenu modoInfo 
+  modoConfig modoPlay modoMenu modoInfo muestraFecha 
 RTSHC08.C.o (ansii.lib):
   _PUSH_ARGS_L _PUSH_ARGS_D _ENTER_UNARY_L _ENTER_UNARY_L64 _ENTER_UNARY_L64_4 
   _ENTER_BINARY_L _ENTER_BINARY_L_RC _ENTER_BINARY_L_LC _ENTER_BINARY_L64 
@@ -696,25 +696,25 @@ RTSHC08.C.o (ansii.lib):
 *********************************************************************************************
 COPYDOWN SECTION
 ---------------------------------------------------------------------------------------------
-------- ROM-ADDRESS: 0x1256 ---- SIZE       4 ---
+------- ROM-ADDRESS: 0x12AD ---- SIZE       4 ---
 Filling bytes inserted
  00050100
-------- ROM-ADDRESS: 0x125A ---- RAM-ADDRESS: 0x100 ---- SIZE       1 ---
+------- ROM-ADDRESS: 0x12B1 ---- RAM-ADDRESS: 0x100 ---- SIZE       1 ---
 Name of initialized Object : Hora
  0C
-------- ROM-ADDRESS: 0x125B ---- RAM-ADDRESS: 0x101 ---- SIZE       1 ---
+------- ROM-ADDRESS: 0x12B2 ---- RAM-ADDRESS: 0x101 ---- SIZE       1 ---
 Name of initialized Object : Dia
  01
-------- ROM-ADDRESS: 0x125C ---- RAM-ADDRESS: 0x102 ---- SIZE       1 ---
+------- ROM-ADDRESS: 0x12B3 ---- RAM-ADDRESS: 0x102 ---- SIZE       1 ---
 Name of initialized Object : Mes
  01
-------- ROM-ADDRESS: 0x125D ---- RAM-ADDRESS: 0x103 ---- SIZE       1 ---
+------- ROM-ADDRESS: 0x12B4 ---- RAM-ADDRESS: 0x103 ---- SIZE       1 ---
 Name of initialized Object : Anio
  10
-------- ROM-ADDRESS: 0x125E ---- RAM-ADDRESS: 0x104 ---- SIZE       1 ---
+------- ROM-ADDRESS: 0x12B5 ---- RAM-ADDRESS: 0x104 ---- SIZE       1 ---
 Name of initialized Object : ComandoIR
  81
-------- ROM-ADDRESS: 0x125F ---- SIZE       2 ---
+------- ROM-ADDRESS: 0x12B6 ---- SIZE       2 ---
 Filling bytes inserted
  0000
 
@@ -769,8 +769,8 @@ irqTIM1CH0                USES _PTB _T1SC AnchoDePulso _T1CH0 BitTrama Comando
 main                      USES configuraCPU habilitaPulsadores inicializaKBI 
                                 habilitaDisplays habilitaGuionY2Puntos inicializaTIM1 
                                 inicializaTIM2 configuraADC _DDRB modoIntro 
-                                configuraFechaHora Dia Mes muestraFecha 
-muestraFecha              USES Dia Mes muestraNumero4Digitos _PTA _PTB 
+                                configuraFechaHora Hora Minutos MuestraHora 
+MuestraHora               USES demoraEnms muestraNumero4Digitos _PTA _PTB 
 _IDIVU                    USES _IDIVMOD 
 _IMODU                    USES _IDIVMOD 
 _IDIVU_8                  USES _IDIVU 
@@ -865,8 +865,10 @@ DEPENDENCY TREE
  |  |     |  
  |  |     +- demoraEnms           (see above)
  |  |        
- |  +- muestraFecha        
+ |  +- MuestraHora         
  |     | 
+ |     +- demoraEnms           (see above)
+ |     |  
  |     +- muestraNumero4Digitos (see above)
  |        
  +- _Startup            
@@ -896,5 +898,5 @@ STATISTIC SECTION
 ExeFile:
 --------
 Number of blocks to be downloaded: 11
-Total size of all blocks to be downloaded: 2573
+Total size of all blocks to be downloaded: 2660
 

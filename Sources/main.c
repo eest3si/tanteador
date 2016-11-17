@@ -30,7 +30,7 @@ void main(void){
     configuraFechaHora();
    
     for(;;){
-    	// menu principal (Carbajal)
+    // menu principal (Carbajal)
     	   	 
         opcion = modoMenu();
 
