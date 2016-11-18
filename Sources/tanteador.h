@@ -983,6 +983,17 @@ void configuraFechaHora(void)
   TBCR_TBIE = ON;	    // habilito nuevamente las interrupciones por TBM
 }
 
+void muestraFecha(void)
+/** muestra la fecha (Schmukler) **/ 
+{
+	unsigned int numero1;
+
+	numero1 = Dia*100 + Mes;               
+	muestraNumero4Digitos(numero1, OFF, OFF);
+	EnciendeGuion;       //Habilito guion de fecha
+	Apaga2Puntos;  //Deshabilito Dos puntos de hora
+}
+
 /** ----------- Seccion de funciones de atencion de interrupcion (ISR) --------- **/
 
 void interrupt irqTIM2OF(void)

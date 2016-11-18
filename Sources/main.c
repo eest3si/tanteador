@@ -55,7 +55,41 @@ void modoPlay(unsigned char topePartida)
   
     while(1) {
 
-        // manejo de la ventaja
+        //Modo Empate
+        if (player1 >= (topePartida - 1) && player2 >= (topePartida - 1))
+        {
+            empate = topePartida - 1;
+            numero = empate*100 + empate;
+            
+            if (player1 == topePartida && player2 == topePartida)
+            {   
+                player1 = topePartida - 1;
+                player2 = topePartida - 1;
+            } 
+            else
+            {
+                // ventaja P1
+                if (player1 >= topePartida)
+                {               
+                    muestraNumero4Digitos(numero, 3, OFF);
+                    // Gana P1
+                    if (player1 > topePartida) 
+                        break;
+                }
+                // ventaja P2
+                if (player2 >= topePartida)
+                {
+                    muestraNumero4Digitos(numero, 1, OFF);
+                    // Gana P2 
+                    if (player2 > topePartida)
+                        break;
+                }
+                // ventaja iguales
+                if (player1 == empate && player2 == empate)
+                    muestraNumero4Digitos(numero, OFF, OFF);         
+            }
+            
+        /** manejo de la ventaja
         if(player1 >= (topePartida-1) && player2 >= (topePartida-1)) {
 
             empate = topePartida - 1; 
@@ -99,7 +133,7 @@ void modoPlay(unsigned char topePartida)
                 numero = empate*100 + empate;
                 muestraNumero4Digitos(numero, OFF, OFF);  
             }
-                 
+        fin manejo de la ventaja**/         
         } else {
             numero = player1*100 + player2;
             muestraNumero4Digitos(numero, OFF, OFF);  
@@ -240,14 +274,4 @@ cont++;
   }
 */
 }
-}
-
-void muestraFecha(void){
-
-  unsigned int numero1;
-  
-  numero1=Dia*100+Mes;               
-  muestraNumero4Digitos(numero1, OFF, OFF);
-  GUION = ON;       //Habilito guion de fecha
-  DOS_PUNTOS = ON;  //Deshabilito Dos puntos de hora
 }
