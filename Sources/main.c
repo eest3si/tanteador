@@ -6,16 +6,16 @@
 void modoPlay(unsigned char);
 void modoInfo(unsigned char);
 unsigned char modoMenu(void);
-void muestraFecha(unsigned char,unsigned char);
 
 /**-------------Main-------------**/
 
-void main(void){
+void main(void) {
 
     unsigned char opcion = 0;
 
     configuraCPU();
-    //inicializaPLL();
+    inicializaPLL();
+    configuraTBM();
     habilitaPulsadores();
     inicializaKBI();
     habilitaDisplays();
