@@ -7,6 +7,7 @@ void modoPlay(unsigned char);
 void modoInfo(unsigned char);
 unsigned char modoMenu(void);
 void muestraFecha(unsigned char,unsigned char);
+void muestraHora(unsigned char,unsigned char);
 
 /**-------------Main-------------**/
 
@@ -15,7 +16,8 @@ void main(void){
     unsigned char opcion = 0;
 
     configuraCPU();
-    //inicializaPLL();
+    inicializaPLL();
+    configuraTBM();
     habilitaPulsadores();
     inicializaKBI();
     habilitaDisplays();
@@ -30,6 +32,8 @@ void main(void){
     configuraFechaHora();
    
     for(;;){
+    while(1){
+      muestraHora(Hora,Minutos);    }
     // menu principal (Carbajal)
     	   	 
         opcion = modoMenu();
@@ -246,8 +250,18 @@ void muestraFecha(void){
 
   unsigned int numero1;
   
-  numero1=Dia*100+Mes;               
+  numero1=Dia*100+Mes;
+  Apaga2Puntos;  //Deshabilito Dos puntos de hora               
   muestraNumero4Digitos(numero1, OFF, OFF);
   GUION = ON;       //Habilito guion de fecha
-  DOS_PUNTOS = ON;  //Deshabilito Dos puntos de hora
 }
+
+ void muestraHora(void){
+
+  unsigned int numero;
+  numero=Hora*100+Minutos;
+  ApagaGuion;       //Deshabilito guion de fecha               
+  muestraNumero4Digitos(numero, OFF, OFF);
+  DOS_PUNTOS = Parpadeo;  //Parpadeo Dos puntos de hora
+  
+  }

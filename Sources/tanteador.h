@@ -116,7 +116,8 @@ unsigned char ComandoIR = 129;      // Comando IR recibido (valor inicial para e
 unsigned int  AnchoDePulso;         // Lapso de tiempo capturado por TIM1
 unsigned char Comando = 0;          // Primeros 7 bits de la trama SIRC
 unsigned char BitTrama = 0;         // Contador de bits recibidos trama SIRC
-unsigned char i, j;                 // para los bucles for() de las ISR
+unsigned char i, j; 
+unsigned char Parpadeo=0;              // para los bucles for() de las ISR
 
 /** ---------------- Seccion inicializacion de modulos ------------------ **/
 
@@ -151,6 +152,12 @@ void inicializaPLL(void)
   PBWC_AUTO = ON;     // Enganche automatico
   while(!PBWC_LOCK);  // esperar a LOCK = 1
   PCTL_BCS = 1;       // cambio a frecuencia del PLL
+}
+
+void configuraTBM(void)
+{
+	TBCR=0x3C;
+	TBCR_TBON=1;
 }
 
 void habilitaDisplays(void)
@@ -1135,7 +1142,7 @@ void interrupt irqTBM(void)
   } else
       Segundos++;
     
-  DOS_PUNTOS = ~DOS_PUNTOS;		// Parpadeo
+  Parpadeo = ~Parpadeo;		// Parpadeo
 
   TBCR_TACK = 1;    // Interrupcion atendida
 }
