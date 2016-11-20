@@ -25,7 +25,7 @@ _startupData is allocated at 0x8F5 and uses 6 Bytes
 extern struct _tagStartup {
   unsigned nofZeroOut     1
   _Range   pZeroOut       0x100     52
-  _Copy    *toCopyDownBeg 0x16C5
+  _Copy    *toCopyDownBeg 0x16BC
 } _startupData;
 
 *********************************************************************************************
@@ -36,8 +36,8 @@ Section Name                    Size  Type     From       To       Segment
 .init                            149     R      0x860      0x8F4   ROM
 .startData                        14     R      0x8F5      0x902   ROM
 .rodata                           17     R      0x903      0x913   ROM
-.text                           3505     R      0x914     0x16C4   ROM
-.copy                             11     R     0x16C5     0x16CF   ROM
+.text                           3496     R      0x914     0x16BB   ROM
+.copy                             11     R     0x16BC     0x16C6   ROM
 .abs_section_0                     1   N/I        0x0        0x0   .absSeg0
 .abs_section_1                     1   N/I        0x1        0x1   .absSeg1
 .abs_section_2                     1   N/I        0x2        0x2   .absSeg2
@@ -129,7 +129,7 @@ Section Name                    Size  Type     From       To       Segment
 .vectSeg85_vect                    2     R     0xFFFE     0xFFFF   .vectSeg85
 
 Summary of section sizes per section type:
-READ_ONLY (R):         E7C (dec:     3708)
+READ_ONLY (R):         E73 (dec:     3699)
 READ_WRITE (R/W):       84 (dec:      132)
 NO_INIT (N/I):          5B (dec:       91)
 
@@ -182,8 +182,8 @@ MODULE:                 -- main.c.o --
      irqTIM1CH0                                1217     13D     317       4   .text       
      main                                      1354      39      57       1   .text       
      modoPlay                                  138D     19C     412      10   .text       
-     modoMenu                                  1529      9D     157       2   .text       
-     modoInfo                                  15C6      1B      27       1   .text       
+     modoMenu                                  1529      94     148       1   .text       
+     modoInfo                                  15BD      1B      27       1   .text       
 - VARIABLES:
      KBI_MASK                                   903       4       4       2   .rodata     
      DiasMeses                                  907       D      13       3   .rodata     
@@ -193,7 +193,7 @@ MODULE:                 -- main.c.o --
      Anio                                       103       1       1      10   .data       
      ComandoIR                                  104       1       1       9   .data       
      P1mas                                      105       1       1      17   .bss        
-     P1menos                                    106       1       1      17   .bss        
+     P1menos                                    106       1       1      15   .bss        
      P2mas                                      107       1       1       5   .bss        
      P2menos                                    108       1       1       7   .bss        
      Okey                                       109       1       1       8   .bss        
@@ -229,13 +229,13 @@ MODULE:                 -- main.c.o --
      j                                          133       1       1       4   .common     
 MODULE:                 -- RTSHC08.C.o (ansii.lib) --
 - PROCEDURES:
-     _IDIVMOD                                  15E1      69     105       2   .text       
-     _IDIVU                                    164A      10      16       2   .text       
-     _IMODU                                    165A      15      21       2   .text       
-     _IDIVU_8                                  166F       C      12       1   .text       
-     _IMODU_8                                  167B      10      16       1   .text       
-     _ICMP                                     168B      16      22       1   .text       
-     _Jump_Table_Header_Offset                 16A1      24      36       3   .text       
+     _IDIVMOD                                  15D8      69     105       2   .text       
+     _IDIVU                                    1641      10      16       2   .text       
+     _IMODU                                    1651      15      21       2   .text       
+     _IDIVU_8                                  1666       C      12       1   .text       
+     _IMODU_8                                  1672      10      16       1   .text       
+     _ICMP                                     1682      16      22       1   .text       
+     _Jump_Table_Header_Offset                 1698      24      36       3   .text       
 - VARIABLES:
 MODULE:                 -- MC68HC908AP32.C.o --
 - PROCEDURES:
@@ -334,7 +334,7 @@ MODULE:                 -- Start08.c.o --
 MODULE STATISTIC
   Name                                      Data   Code  Const
 ---------------------------------------------------------------------------------------------
-  main.c.o                                    52   3277     17
+  main.c.o                                    52   3268     17
   RTSHC08.C.o (ansii.lib)                      0    228      0
   MC68HC908AP32.C.o                           91      0      0
   Start08.c.o                                  0    149      0
@@ -605,7 +605,7 @@ OBJECT LIST SORTED BY ADDRESS
      Anio                                       103       1       1      10   .data       
      ComandoIR                                  104       1       1       9   .data       
      P1mas                                      105       1       1      17   .bss        
-     P1menos                                    106       1       1      17   .bss        
+     P1menos                                    106       1       1      15   .bss        
      P2mas                                      107       1       1       5   .bss        
      P2menos                                    108       1       1       7   .bss        
      Okey                                       109       1       1       8   .bss        
@@ -676,15 +676,15 @@ OBJECT LIST SORTED BY ADDRESS
      irqTIM1CH0                                1217     13D     317       4   .text       
      main                                      1354      39      57       1   .text       
      modoPlay                                  138D     19C     412      10   .text       
-     modoMenu                                  1529      9D     157       2   .text       
-     modoInfo                                  15C6      1B      27       1   .text       
-     _IDIVMOD                                  15E1      69     105       2   .text       
-     _IDIVU                                    164A      10      16       2   .text       
-     _IMODU                                    165A      15      21       2   .text       
-     _IDIVU_8                                  166F       C      12       1   .text       
-     _IMODU_8                                  167B      10      16       1   .text       
-     _ICMP                                     168B      16      22       1   .text       
-     _Jump_Table_Header_Offset                 16A1      24      36       3   .text       
+     modoMenu                                  1529      94     148       1   .text       
+     modoInfo                                  15BD      1B      27       1   .text       
+     _IDIVMOD                                  15D8      69     105       2   .text       
+     _IDIVU                                    1641      10      16       2   .text       
+     _IMODU                                    1651      15      21       2   .text       
+     _IDIVU_8                                  1666       C      12       1   .text       
+     _IMODU_8                                  1672      10      16       1   .text       
+     _ICMP                                     1682      16      22       1   .text       
+     _Jump_Table_Header_Offset                 1698      24      36       3   .text       
      _SBSR                                     FE00       1       1       0   .abs_section_fe00
      _SRSR                                     FE01       1       1       0   .abs_section_fe01
      _SBFCR                                    FE03       1       1       0   .abs_section_fe03
@@ -730,25 +730,25 @@ RTSHC08.C.o (ansii.lib):
 *********************************************************************************************
 COPYDOWN SECTION
 ---------------------------------------------------------------------------------------------
-------- ROM-ADDRESS: 0x16C5 ---- SIZE       4 ---
+------- ROM-ADDRESS: 0x16BC ---- SIZE       4 ---
 Filling bytes inserted
  00050100
-------- ROM-ADDRESS: 0x16C9 ---- RAM-ADDRESS: 0x100 ---- SIZE       1 ---
+------- ROM-ADDRESS: 0x16C0 ---- RAM-ADDRESS: 0x100 ---- SIZE       1 ---
 Name of initialized Object : Hora
  0C
-------- ROM-ADDRESS: 0x16CA ---- RAM-ADDRESS: 0x101 ---- SIZE       1 ---
+------- ROM-ADDRESS: 0x16C1 ---- RAM-ADDRESS: 0x101 ---- SIZE       1 ---
 Name of initialized Object : Dia
  01
-------- ROM-ADDRESS: 0x16CB ---- RAM-ADDRESS: 0x102 ---- SIZE       1 ---
+------- ROM-ADDRESS: 0x16C2 ---- RAM-ADDRESS: 0x102 ---- SIZE       1 ---
 Name of initialized Object : Mes
  01
-------- ROM-ADDRESS: 0x16CC ---- RAM-ADDRESS: 0x103 ---- SIZE       1 ---
+------- ROM-ADDRESS: 0x16C3 ---- RAM-ADDRESS: 0x103 ---- SIZE       1 ---
 Name of initialized Object : Anio
  10
-------- ROM-ADDRESS: 0x16CD ---- RAM-ADDRESS: 0x104 ---- SIZE       1 ---
+------- ROM-ADDRESS: 0x16C4 ---- RAM-ADDRESS: 0x104 ---- SIZE       1 ---
 Name of initialized Object : ComandoIR
  81
-------- ROM-ADDRESS: 0x16CE ---- SIZE       2 ---
+------- ROM-ADDRESS: 0x16C5 ---- SIZE       2 ---
 Filling bytes inserted
  0000
 
@@ -817,9 +817,9 @@ main                      USES configuraCPU habilitaPulsadores inicializaKBI
 modoPlay                  USES modoPlay muestraNumero4Digitos Timer5Seg 
                                 ModoConfig limpiaFlagsGlobales ReiniciarPartida P1mas 
                                 P1menos P2mas P2menos _ICMP 
-modoMenu                  USES Timer1Min muestraEnDisplay _PTB _PTC P1menos 
-                                P1mas ContadorTimer1Min Okey limpiaFlagsGlobales 
-                                modoMenu activaDisplay demoraEnms 
+modoMenu                  USES Timer1Min muestraEnDisplay _PTB _PTC P1mas 
+                                ContadorTimer1Min Okey limpiaFlagsGlobales activaDisplay 
+                                demoraEnms 
 modoInfo                  USES demoraEnms _PTA ReiniciarPartida 
 _IDIVU                    USES _IDIVMOD 
 _IMODU                    USES _IDIVMOD 
@@ -987,6 +987,6 @@ STATISTIC SECTION
 
 ExeFile:
 --------
-Number of blocks to be downloaded: 11
-Total size of all blocks to be downloaded: 3708
+Number of blocks to be downloaded: 10
+Total size of all blocks to be downloaded: 3699
 
