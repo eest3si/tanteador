@@ -198,14 +198,15 @@ unsigned char modoMenu(void)
             DISPLAY_1 = OFF;
         }
 
-        if (P1mas) {
+        if (P1mas || P1menos) {
         	P1mas = OFF;	
+        	P1menos = OFF;
         	pulso++;
             ContadorTimer1Min = 0;  // reinicio el timeout por inactividad
         }
 
         // confirmacion del usuario
-        if (P1menos) {     
+        if (Okey) {     
             limpiaFlagsGlobales();
             Timer1Min = OFF;        // apago el flag del timer
             ContadorTimer1Min = 0;  // reinicio el timeout por inactividad

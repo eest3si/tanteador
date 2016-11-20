@@ -99,10 +99,18 @@ unsigned char Okey = FALSE;				// Flag boton OK del remoto
 unsigned char ModoTest = FALSE; 		// Flag Modo Test
 unsigned char ModoConfig = FALSE;		// Flag Modo Config
 unsigned char ReiniciarPartida = FALSE;	// Flag Restart Game
-unsigned char Timer5Seg = OFF;			// Flag que esta en "1" durante 5 segs
-unsigned char ContadorTimer5Seg = 0;
 unsigned char Timer1Min = OFF;			// Flag que esta en "1" durante 1 minuto
 unsigned int  ContadorTimer1Min = 0;
+unsigned char Timer5Seg = OFF;			// Flag que esta en "1" durante 5 segs
+unsigned char ContadorTimer5Seg = 0;
+unsigned char Timer3Seg = OFF;		// Flag que esta en "1" durante 3 segs
+unsigned char ContadorTimer3Seg = 0;
+unsigned char Timer2Seg = OFF;
+unsigned char ContadorTimer2Seg = 0;
+unsigned char Timer500ms = OFF;
+unsigned char ContadorTimer500ms = 0;
+unsigned char Timer200ms = OFF;
+unsigned char ContadorTimer200ms = 0;
 unsigned char ContadorParpadeo = 0;
 unsigned char Hora = 12;
 unsigned char Minutos = 0;
@@ -117,8 +125,8 @@ unsigned int  AnchoDePulso;         // Lapso de tiempo capturado por TIM1
 unsigned char Comando = 0;          // Primeros 7 bits de la trama SIRC
 unsigned char BitTrama = 0;         // Contador de bits recibidos trama SIRC
 unsigned char i, j; 
-unsigned char Parpadeo=0;              // para los bucles for() de las ISR
-
+unsigned char Parpadeo = 0;         // para los bucles for() de las ISR
+unsigned char a = 0;                // Para los pulsos del ModoTest
 /** ---------------- Seccion inicializacion de modulos ------------------ **/
 
 void configuraCPU(void)
@@ -613,9 +621,9 @@ void limpiaFlagsGlobales(void)
 	P2mas = 	FALSE;	// Flag P2+
 	P2menos = 	FALSE;	// Flag P2-
 	Okey = 		FALSE;	// Flag boton OK del remoto
-	ModoTest = FALSE;
-	ModoConfig = FALSE;
-	ReiniciarPartida = FALSE;
+  ModoTest= FALSE; //Flag boton MENU del remoto
+  ModoConfig = FALSE; //Flag boton volver a MODO CONFIG
+  ReiniciarPartida = FALSE; //Flag boton REINICIAR PARTIDA
 }
 
 void modoTest(void)
@@ -776,13 +784,13 @@ unsigned char modoConfig(void)
     	
         //Modo Test
         if(ModoTest) {
-        	ModoTest = FALSE;
-        	while(Timer5Seg) modoTest();
+        	ModoTest = FALSE;    // limpio el flag   
+        	while(Timer3Seg) modoTest();
         }
       
-    	// P1+
+    	  // P1+
         if(P1mas) {
-        	P1mas = FALSE;
+        	P1mas = FALSE;       // limpio el flag
         	pulso++;
         }   
   
@@ -790,11 +798,11 @@ unsigned char modoConfig(void)
         if(pulso == 4) pulso = 0;
          
         //P1-  Retorno al modo play
-        if(P1menos) {
-            limpiaFlagsGlobales();
-            pulso = 0;
-            demoraEnms(150);
-            return (numero);
+        if(Okey) {
+          Okey = FALSE;        // limpio el flag
+          pulso = 0;
+          demoraEnms(150);
+          return (numero);
         }
 
         if(pulso == 0) numero = 5;
@@ -1026,6 +1034,47 @@ void interrupt irqTIM2OF(void)
       }
     } 
 
+  // para el timer de 200 milisegundos
+  if (Timer200ms) {
+    if (ContadorTimer200ms == 2) {
+      ContadorTimer200ms = 0;
+      Timer200ms = OFF;
+    }
+    else
+      ContadorTimer200ms++;
+  }
+  
+  // para el timer de 500 milisegundos
+  if (Timer500ms) {
+    if (ContadorTimer500ms == 5) {
+      ContadorTimer500ms = 0;
+      Timer500ms = OFF;
+    }
+    else
+      ContadorTimer500ms++;
+  }
+  
+  // para el timer de 2 segundos
+  if (Timer2Seg) {
+    if (ContadorTimer2Seg == 30) {
+      ContadorTimer2Seg = 0;
+      Timer2Seg = OFF;
+    }
+    else
+      ContadorTimer2Seg++;
+  }
+
+  
+  // para el timer de 3 segundos
+  if (Timer3Seg) {
+    if (ContadorTimer3Seg == 30) {
+      ContadorTimer3Seg = 0;
+      Timer3Seg = OFF;
+    }
+    else
+      ContadorTimer3Seg++;
+  }
+  
   // para el timer de 5 segundos
   if (Timer5Seg) {
     if (ContadorTimer5Seg == 50) {
@@ -1071,31 +1120,41 @@ void interrupt irqPulsadores(void)
           KBIER &= ~KBI_MASK[j];        // deshabilito IRQ para ese pulsador
           Antirrebote[j] = ANTIRREBOTE; // y le asigno un antirrebote
           
+          // Okey
+          if (!KBIER_KBIE6)
+            Okey = TRUE; 
+          
           // Modo Test (P2+ y P2-)
           if (!KBIER_KBIE5 & !KBIER_KBIE4) {
             ModoTest = TRUE;   // seteo la variable global
-            Timer5Seg = ON; // "arranco" el timer de 5 segundos
+            Timer3Seg = ON; // "arranco" el timer de 3 segundos
           }   
 
           // Reiniciar partida (P1+ y P2+)
-          if (!KBIER_KBIE7 & !KBIER_KBIE5) 
+          if (!KBIER_KBIE7 & !KBIER_KBIE5) {
             ReiniciarPartida = TRUE;
-
+            Timer500ms = ON;               
+          }
+          
           // Modo Config (P1- y P2-)
           if (!KBIER_KBIE6 & !KBIER_KBIE4)
             ModoConfig = TRUE;
           
           // P1+
-          if (!KBIER_KBIE7)
-            P1mas = TRUE; 
+          if (!KBIER_KBIE7){
+            if(Timer500ms == OFF)
+              P1mas = TRUE; 
+          } 
 
           // P1-
           if (!KBIER_KBIE6)
             P1menos = TRUE; 
 
           // P2+
-          if (!KBIER_KBIE5)
-            P2mas = TRUE; 
+          if (!KBIER_KBIE5){
+            if(Timer500ms == OFF)
+              P2mas = TRUE; 
+          } 
 
           // P2-
           if (!KBIER_KBIE4)
@@ -1206,13 +1265,80 @@ void interrupt irqTIM1CH0(void)
   }
 
   if (BitTrama >= 7) ComandoIR = Comando;  // si recibi al menos 7 bits guardo el comando
-
   // la logica del manejo de botones (Facundo)
-  // setear flag del boton presionado
-  // setear flag timer1seg
-  // enmascarar T1SC0_CH0IE = 0;
+ 
+  //P1+
   
-
+  if (ComandoIR == 33 && Timer200ms == OFF){
+    limpiaFlagsGlobales();
+    P1mas = TRUE;
+    Timer200ms = ON;   
+  }
+  
+  //P1-
+  if (ComandoIR == 35 && Timer200ms == OFF){
+    limpiaFlagsGlobales();
+    P1menos = TRUE;
+    Timer200ms = ON; 
+  }
+  
+  //P2+
+  
+  if (ComandoIR == 37 && Timer200ms == OFF){
+    limpiaFlagsGlobales(); 
+    P2mas = TRUE;
+    Timer200ms = ON;   
+  }
+  
+  //P2-
+  
+  if (ComandoIR == 39 && Timer200ms == OFF){
+    limpiaFlagsGlobales(); 
+    P2menos = TRUE;
+    Timer200ms = ON;    
+  }  
+  
+  //Okey
+  
+  if (ComandoIR == 23 && Timer200ms == OFF){
+    limpiaFlagsGlobales();
+    Okey = TRUE;
+    Timer200ms = ON;
+  }
+    
+  //Modo Test y Reiniciar Partida
+  
+  if (ComandoIR == 117 && Timer2Seg == OFF){
+    a = 0;
+    Timer2Seg = ON;
+  }
+    
+  if (ComandoIR == 117 && Timer200ms == OFF && Timer3Seg == OFF){
+    limpiaFlagsGlobales();
+    
+    if(a < 3){
+      a++;                 
+      
+      if(a == 1)
+        ReiniciarPartida = TRUE; 
+      
+      Timer200ms = ON; 
+    }
+    
+    if(a == 3){
+      a = 0;
+      ModoTest = TRUE;
+      Timer3Seg = ON;
+    }
+  }
+  
+  //Volver a Modo Config
+  
+  if (ComandoIR == 119 && Timer200ms == OFF){
+    limpiaFlagsGlobales();
+    ModoConfig = TRUE;
+    Timer200ms = ON;
+  }
 
   T1SC0_CH0F=0;   // interrupcion atendida
 }
