@@ -14,8 +14,8 @@ void main(void) {
     unsigned char opcion = 0;
 
     configuraCPU();
-    inicializaPLL();
-    configuraTBM();
+    //inicializaPLL();
+    //configuraTBM();
     habilitaPulsadores();
     inicializaKBI();
     habilitaDisplays();
@@ -30,8 +30,6 @@ void main(void) {
     configuraFechaHora();
    
     for(;;){
-    // menu principal (Carbajal)
-    	   	 
         opcion = modoMenu();
 
         if (opcion)
@@ -50,12 +48,12 @@ void modoPlay(unsigned char topePartida)
 {
       
     char player1 = 0, player2 = 0;
-    unsigned char LastSt = 0, empate = 0;  
+    unsigned char empate = 0;  
     unsigned int numero = 0;
   
     while(1) {
 
-        //Modo Empate
+        // Manejo del Empate
         if (player1 >= (topePartida - 1) && player2 >= (topePartida - 1))
         {
             empate = topePartida - 1;
@@ -73,79 +71,58 @@ void modoPlay(unsigned char topePartida)
                 {               
                     muestraNumero4Digitos(numero, 3, OFF);
                     // Gana P1
-                    if (player1 > topePartida) 
+                    if (player1 > topePartida) {
+                        Timer5Seg = ON;
+                        while (Timer5Seg) {
+                            numero = topePartida*100 + empate;
+                            muestraNumero4Digitos(numero, OFF, ON);
+                        }
                         break;
+                    }
                 }
                 // ventaja P2
                 if (player2 >= topePartida)
                 {
                     muestraNumero4Digitos(numero, 1, OFF);
-                    // Gana P2 
-                    if (player2 > topePartida)
+                    // Gana P2 (parpadea 5 seg y sale)
+                    if (player2 > topePartida) {
+                        Timer5Seg = ON;
+                        while (Timer5Seg) {
+                            numero = empate*100 + topePartida;
+                            muestraNumero4Digitos(numero, OFF, ON);
+                        }
                         break;
+                    }
                 }
                 // ventaja iguales
                 if (player1 == empate && player2 == empate)
                     muestraNumero4Digitos(numero, OFF, OFF);         
-            }
-            
-        /** manejo de la ventaja
-        if(player1 >= (topePartida-1) && player2 >= (topePartida-1)) {
-
-            empate = topePartida - 1; 
-    
-            // P2 tenia la ventaja y P1 se la saca
-            if(LastSt == 2)
-                if(player1 < topePartida && player2 >= topePartida) {
-                    LastSt = 1;
-                    player2 = empate;
-                }
-            
-            // P1 tenia la ventaja y P2 se la saca
-            if(LastSt == 1)
-                if(player1 >= topePartida && player2 < topePartida) {
-                    LastSt = 2;
-                    player1 = empate;
-                }
-            
-            // ventaja P1
-            if(player1 >= topePartida && player2 < topePartida)
-                LastSt = 1;
-            
-            if(LastSt == 1) {
-                numero = empate*100 + empate; 
-                muestraNumero4Digitos(numero, 3, OFF);
-                player2 = empate;  
-            }
-               
-            // ventaja P2
-            if(player2 >= topePartida)
-                LastSt = 2;
-
-            if (LastSt == 2) {
-                numero = empate*100 + empate; 
-                muestraNumero4Digitos(numero, 1, OFF);
-                player1 = empate;  
-            } 
-               
-            // ventaja iguales
-            if(player1 == empate || player2 == empate ) {
-                numero = empate*100 + empate;
-                muestraNumero4Digitos(numero, OFF, OFF);  
-            }
-        fin manejo de la ventaja**/         
-        } else {
+            }      
+        }
+        else
+        {
             numero = player1*100 + player2;
             muestraNumero4Digitos(numero, OFF, OFF);  
         }
-                
-		  //ModoConfig (P1- y P2-)	   
+        
+        // Gana alguno de los dos
+        if (!empate && (player1 == topePartida || player2 == topePartida))
+        {
+            Timer5Seg = ON;
+            while (Timer5Seg) {
+                numero = player1*100 + player2;
+                muestraNumero4Digitos(numero, OFF, ON);
+            }
+            break;
+        }
+
+		// ModoConfig (P1- y P2-)	   
 	   	if(ModoConfig) {
 	   		limpiaFlagsGlobales();
 	   		break;
 	   	}
 	   
-	    //RESET SCORE (P1+ y P2+)
+	    // Reset Score (P1+ y P2+)
 	  	if(ReiniciarPartida) {
 	    	limpiaFlagsGlobales();
 	    	player2 = 0;
@@ -170,12 +147,6 @@ void modoPlay(unsigned char topePartida)
 	    if(P2menos) {
 	    	P2menos = FALSE;
 	    	if(player2>0) player2--;
-	    }
-
-	    // fin de la partida
-        if (player1 == topePartida || player2 == topePartida){
-	      limpiaFlagsGlobales();
-	      break;
 	    }
     }
 }
@@ -230,7 +201,7 @@ unsigned char modoMenu(void)
         if (P1mas) {
         	P1mas = OFF;	
         	pulso++;
-          ContadorTimer1Min = 0;  // reinicio el timeout por inactividad
+            ContadorTimer1Min = 0;  // reinicio el timeout por inactividad
         }
 
         // confirmacion del usuario

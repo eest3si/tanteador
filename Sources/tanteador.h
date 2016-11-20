@@ -156,8 +156,8 @@ void inicializaPLL(void)
 
 void configuraTBM(void)
 {
-	TBCR=0x3C;
-	TBCR_TBON=1;
+	TBCR = 0x3C;
+	TBCR_TBON = 1;
 }
 
 void habilitaDisplays(void)
@@ -991,15 +991,26 @@ void configuraFechaHora(void)
 }
 
 void muestraFecha(void)
-/** muestra la fecha (Schmukler) **/ 
+/** Muestra la Fecha con el guion encendido (Schmukler) **/
 {
 	unsigned int numero1;
-
-	numero1 = Dia*100 + Mes;               
+	numero1 = Dia*100 + Mes;
+	Apaga2Puntos;  //Deshabilito Dos puntos de hora               
 	muestraNumero4Digitos(numero1, OFF, OFF);
 	EnciendeGuion;       //Habilito guion de fecha
-	Apaga2Puntos;  //Deshabilito Dos puntos de hora
 }
+
+void muestraHora(void)
+/** Muestra la Hora con parpadeo de los 2 puntos (Schmukler) **/
+{
+
+	unsigned int numero;
+	numero = Hora*100 + Minutos;
+	ApagaGuion;       //Deshabilito guion de fecha               
+	muestraNumero4Digitos(numero, OFF, OFF);
+	DOS_PUNTOS = Parpadeo;  //Parpadeo Dos puntos de hora
+}
+
 
 /** ----------- Seccion de funciones de atencion de interrupcion (ISR) --------- **/
 
