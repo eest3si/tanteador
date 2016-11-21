@@ -127,6 +127,7 @@ unsigned char BitTrama = 0;         // Contador de bits recibidos trama SIRC
 unsigned char i, j; 
 unsigned char Parpadeo = 0;         // para los bucles for() de las ISR
 unsigned char a = 0;                // Para los pulsos del ModoTest
+unsigned char Temperatura;             
 /** ---------------- Seccion inicializacion de modulos ------------------ **/
 
 void configuraCPU(void)
@@ -611,6 +612,37 @@ unsigned int convierteEnTemp(unsigned int valor, unsigned char escala)
       return convierteEnmV(valor);
 }
 
+
+void MideTemp(void) {
+  ArrancarConversionAD;
+  while(!ConversionCompleta);
+  Temperatura=lecturaAD();
+  Temperatura=convierteEnTemp(Temperatura,CELSIUS);
+   
+  }
+  
+void MuestraTemp(void){
+unsigned char dec;
+
+dec=Temperatura/10;
+dec=dec-24;
+  muestraNumero2Digitos((unsigned char)dec, 0,DISPLAYS_3_4,OFF);
+/** muestra el nro recibido en 2 displays del Edukit **/
+/** posicionPuntoDecimal = (0 -apagado-, 1, 2) **/
+/** displays = (DISPLAYS_1_2, DISPLAYS_3_4) **/
+/** parpadear = (OFF, ON) **/ 
+
+muestraEnDisplay(0x63);
+activaDisplay(2);
+ demoraEnms(DEMORA_DISPLAY_MS);
+            DISPLAY_2 = OFF;
+
+muestraEnDisplay(0x39);
+activaDisplay(1);
+ demoraEnms(DEMORA_DISPLAY_MS);
+            DISPLAY_1 = OFF;
+                                             
+}
 /** ----------------- Funciones propias del tanteador ------------------ **/
 
 void limpiaFlagsGlobales(void)

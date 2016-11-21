@@ -25,6 +25,13 @@ void main(void) {
     configuraADC();         // para el sensor de temperatura (ADCH3/PTA3)
     HabilitarSensorIR;      // conectado a TIM1CH0/PTB4 
     EnableInterrupts;
+    
+     while(1){
+      
+     MideTemp();
+ MuestraTemp();
+    }
+
 
     modoIntro();
     configuraFechaHora();
