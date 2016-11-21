@@ -2,198 +2,249 @@
 #include "derivative.h" /* include peripheral declarations */
 #include "tanteador.h"
 
-/*-------------Declaración de funciones------------*/
+/*-------------Prototipos------------*/
+void modoPlay(unsigned char);
+void modoInfo(/*unsigned char*/);
+unsigned char modoMenu(void);
+void muestraFecha(unsigned char,unsigned char);
 
-void MuestraModoConfig(unsigned char, unsigned char);
-unsigned char ModoConfig(void);
-void ModoPlay(unsigned char );
-
-/*-------------Variables globales-------------*/
-
-unsigned char pepe;
+unsigned char Exit=0;
 
 /**-------------Main-------------**/
 
 void main(void){
-    unsigned char i=0,antirrebote=0;                              
-    DisableInterrupts;
-    inicializaCPU();
-    inicializaPulsadores();
-    inicializaDisplays();
-  
+
+    unsigned char opcion = 0;
+
+    configuraCPU();
+    //inicializaPLL();
+    habilitaPulsadores();
+    inicializaKBI();
+    habilitaDisplays();
+    habilitaGuionY2Puntos();// Guion: PTA2, 2Puntos: PTB0 
+    inicializaTIM1();       // Input-capture para el control remoto IR
+    inicializaTIM2();       // base de tiempo de 100 ms
+    configuraADC();         // para el sensor de temperatura (ADCH3/PTA3)
+    HabilitarSensorIR;      // conectado a TIM1CH0/PTB4 
+    EnableInterrupts;
+
+    modoInfo();
+        
+    modoIntro();
+    configuraFechaHora();
+   
     for(;;){
-        pepe=ModoConfig();
-     
-        ModoPlay(pepe+1);
-    } /* loop forever */
-} /* fin main */
+    // menu principal (Carbajal)
+    	   	 
+        opcion = modoMenu();
 
-/** --------- Sección de funciones -------------- **/
-
-void ModoPlay(unsigned char modoConfig){
-    char player1=0;
-    char player2=0;
-    unsigned int numero=0;
-    unsigned char i=0,antirrebote=0;
-  
-    while(1){
-        numero=player1*100+player2;               
-        muestraNumero4Digitos(numero,0,BARRER_POR_DISPLAY);
-        
-                
-   //ModoConfig
-   
-   if(SW3 == 0 && SW1 == 0) { 
-   demoraEnms(500);
-   break;
-   }
-    
-    
-   //RESET SCORE 
-    
-   if(!antirrebote){
-   if(SW4 == 0 && SW2 == 0){
-      player2=0;
-      player1=0;
-      antirrebote=1;
-      i=0;
-    }
-    } else {
+        if (opcion)
+            modoPlay(modoConfig());
+        else
+            modoInfo(/*FALSE*/);
+    } /* loop forever */     
       
-      i++;
-      if(i==150) antirrebote=0;
-    }
-        
-        
-        
-                           
-        if(!antirrebote){
-            if(SW1==0){
-            player1++;
-            antirrebote=1;
-            i=0;
-            }
-        } 
-        else{
-            i++;
-            if(i==50) antirrebote=0;
-        }
-   
-        if(!antirrebote){
-            if(SW2==0){
-                if (player1==0) i++;
-                else{
-                    player1--;
-                    antirrebote=1;
-                    i=0;
+}  /*fin main */
+
+
+/** --------- Seccion funciones -------------- **/
+
+void modoPlay(unsigned char topePartida)
+/** version inicial por Bourgez **/
+/** manejo del empate por Torres **/
+{
+      
+    char player1 = 0, player2 = 0;
+    unsigned char LastSt = 0, empate = 0;  
+    unsigned int numero = 0;
+  
+    while(1) {
+
+        // manejo de la ventaja
+        if(player1 >= (topePartida-1) && player2 >= (topePartida-1)) {
+
+            empate = topePartida - 1; 
+    
+            // P2 tenia la ventaja y P1 se la saca
+            if(LastSt == 2)
+                if(player1 < topePartida && player2 >= topePartida) {
+                    LastSt = 1;
+                    player2 = empate;
                 }
-            }
-         }
-         else{
-             i++;
-             if(i==50) antirrebote=0;
-         }
-   
-         if(!antirrebote){
-             if(SW3==0){
-                 player2++;
-                 antirrebote=1;
-                 i=0;   
-             }     
-         }
-         else{
-             i++;
-             if(i==50) antirrebote=0;
-         }
-     
-         if(!antirrebote){
-             if(SW4==0){
-                 if (player2==0) i++;
-                 else{
-                     player2--;
-                     antirrebote=1;
-                     i=0;
-                 }
-      
-             }    
-         }
-         else{
-             i++;
-             if(i==50) antirrebote=0;
-         }
-      
-         if (player1==modoConfig) break;
-    
-         if (player2==modoConfig) break;
- 
-         
-     }
-}
-
-
-unsigned char ModoConfig(void){
-
-    unsigned char antirrebote=0,i=0,retorno=0;
-    unsigned int numero=0;
-
-    int pulso=0;
-    int modo=0;
-
-    while(1){
-        if(!antirrebote){
-            if(SW1==0 && SW2==0){           //Modo Test
-                while(SW1==0 && SW2==0){       
-                    modoTest();
-                }
-                antirrebote=1;
-                i=0;
-            } 
-      
-            if(SW4==0){           //P1+
-                pulso++;   
-                demoraEnms(50);
-                antirrebote=1;
-                i=0;
-            }
-        } 
-        else{    
-            i++;
-            if(i==50) antirrebote=0;
-        }
-  
-        if(pulso==4) pulso=0;    //P1 limite
-  
-        if(SW3==0){              //P1-  Retorno del modo de juego
-            pulso=0;
-            demoraEnms(150);
-            return (numero);
-        }
-
-        if(pulso==0) numero=5;
-        if(pulso==1) numero=7;
-        if(pulso==2) numero=14;
-        if(pulso==3) numero=21;
-
-        MuestraModoConfig(numero,modo);
-
-    }
-}
-
-void MuestraModoConfig(unsigned char puntos, unsigned char modo){
-    unsigned char i, digitos[4];
-  
-    muestraCaracterEnDisplay(0x39);
-    activaDisplay(4);
-    demoraEnms(DEMORA_DISPLAY_MS);
-    muestraCaracterEnDisplay(0x73);
-    activaDisplay(3);
-    demoraEnms(DEMORA_DISPLAY_MS);
-    muestraNumeroEnDisplay(puntos/10, OFF);
-    activaDisplay(2);
-    demoraEnms(DEMORA_DISPLAY_MS);
-    muestraNumeroEnDisplay(puntos%10, OFF);
-    activaDisplay(1);
-    demoraEnms(DEMORA_DISPLAY_MS);
             
-}  
-/* Fin ModoConfig */
+            // P1 tenia la ventaja y P2 se la saca
+            if(LastSt == 1)
+                if(player1 >= topePartida && player2 < topePartida) {
+                    LastSt = 2;
+                    player1 = empate;
+                }
+            
+            // ventaja P1
+            if(player1 >= topePartida && player2 < topePartida)
+                LastSt = 1;
+            
+            if(LastSt == 1) {
+                numero = empate*100 + empate; 
+                muestraNumero4Digitos(numero, 3, OFF);
+                player2 = empate;  
+            }
+               
+            // ventaja P2
+            if(player2 >= topePartida)
+                LastSt = 2;
+
+            if (LastSt == 2) {
+                numero = empate*100 + empate; 
+                muestraNumero4Digitos(numero, 1, OFF);
+                player1 = empate;  
+            } 
+               
+            // ventaja iguales
+            if(player1 == empate || player2 == empate ) {
+                numero = empate*100 + empate;
+                muestraNumero4Digitos(numero, OFF, OFF);  
+            }
+                 
+        } else {
+            numero = player1*100 + player2;
+            muestraNumero4Digitos(numero, OFF, OFF);  
+        }
+                
+		  //ModoConfig (P1- y P2-)	   
+	   	if(ModoConfig) {
+	   		limpiaFlagsGlobales();
+	   		break;
+	   	}
+	   
+	    //RESET SCORE (P1+ y P2+)
+	  	if(ReiniciarPartida) {
+	    	limpiaFlagsGlobales();
+	    	player2 = 0;
+	    	player1 = 0;
+	    }
+	 
+		if(P1mas) {
+			P1mas = FALSE;
+			player1++;
+		}
+
+	    if(P1menos) {
+	    	P1menos = FALSE;
+	    	if(player1>0) player1--;
+	    }
+
+	    if(P2mas) {
+	    	P2mas = FALSE;
+	    	player2++;
+	    }
+
+	    if(P2menos) {
+	    	P2menos = FALSE;
+	    	if(player2>0) player2--;
+	    }
+
+	    // fin de la partida
+        if (player1 == topePartida || player2 == topePartida){
+	      limpiaFlagsGlobales();
+	      break;
+	    }
+    }
+}
+
+unsigned char modoMenu(void)
+/** menu principal (Carbajal) **/
+/** permite elegir entre "modo play" y "modo info" **/
+/** va al modo info tras 1 minuto de inactividad **/
+{
+    unsigned char pulso = 2;
+    
+    Timer1Min = ON;
+    
+    // lo reestablece la ISR
+    while(Timer1Min) {
+
+        if (pulso > 2)
+            pulso = 1;
+
+        // modo play (muestra PP)
+        if (pulso == 2) {
+            muestraEnDisplay(0x73); // P
+            activaDisplay(4);
+            demoraEnms(DEMORA_DISPLAY_MS);
+            activaDisplay(3);
+            demoraEnms(DEMORA_DISPLAY_MS);            
+        }
+
+        // modo info
+        if (pulso == 1) {
+            muestraEnDisplay(0x06); // I
+            activaDisplay(4);
+            demoraEnms(DEMORA_DISPLAY_MS);
+            DISPLAY_4 = OFF;
+            
+            muestraEnDisplay(0x54); // n
+            activaDisplay(3);
+            demoraEnms(DEMORA_DISPLAY_MS);
+            DISPLAY_3 = OFF;
+    
+            muestraEnDisplay(0x71); // F
+            activaDisplay(2);
+            demoraEnms(DEMORA_DISPLAY_MS);
+            DISPLAY_2 = OFF;
+    
+            muestraEnDisplay(0x5C); // o
+            activaDisplay(1);
+            demoraEnms(DEMORA_DISPLAY_MS);
+            DISPLAY_1 = OFF;
+        }
+
+        if (P1mas) {
+        	P1mas = OFF;	
+        	pulso++;
+          ContadorTimer1Min = 0;  // reinicio el timeout por inactividad
+        }
+
+        // confirmacion del usuario
+        if (P1menos) {     
+            limpiaFlagsGlobales();
+            Timer1Min = OFF;        // apago el flag del timer
+            ContadorTimer1Min = 0;  // reinicio el timeout por inactividad
+            
+            if (pulso == 1)
+                return FALSE;
+            if (pulso == 2)
+                return TRUE;
+        }
+    }
+    // salgo por timeout (va al modo Info)
+    return FALSE;
+}
+
+void modoInfo(/*unsigned char exit*/) {
+  unsigned char mostrador;
+  Timer5Seg = ON;
+  
+  
+
+  /*____Muestra-Fecha_____*/
+  mostrador=Mes*100+Dia;
+  formateaNumero4Digitos(mostrador);
+  walk(INPUT);
+  while(Timer5Seg && !Exit){muestraFecha();}
+  walk(OUTPUT);
+  /*____Muestra-Hora_____
+   mostrador=HORA*100+MINUTOS;
+  formateaNumero4Digitos(mostrador);
+  walk(INPUT);
+  while(Timer5Seg && !Exit){muestraHora();}
+  walk(OUTPUT);*/
+  /*____Muestra-Temperatura_____
+  mostrador=Temperatura*100;
+  formateaNumero4Digitos(mostrador);
+  walk(INPUT);
+  while(Timer5Seg && !Exit){MuestraTemp();}
+  walk(OUTPUT);*/
+
+
+
+}
