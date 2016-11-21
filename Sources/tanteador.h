@@ -1121,7 +1121,7 @@ void interrupt irqPulsadores(void)
           Antirrebote[j] = ANTIRREBOTE; // y le asigno un antirrebote
           
           // Okey
-          if (!KBIER_KBIE6)
+          if (!KBIER_KBIE4)
             Okey = TRUE; 
           
           // Modo Test (P2+ y P2-)
